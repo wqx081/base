@@ -1,5 +1,5 @@
-#ifndef KUDU_UTIL_MALLOC_H
-#define KUDU_UTIL_MALLOC_H
+#ifndef BASE_UTIL_MALLOC_H
+#define BASE_UTIL_MALLOC_H
 
 #include <stdint.h>
 
@@ -15,4 +15,4 @@ int64_t base_malloc_usable_size(const void* obj);
 } // namespace util
 } // namespace base
 
-#endif // KUDU_UTIL_MALLOC_H
+#endif // BASE_UTIL_MALLOC_H

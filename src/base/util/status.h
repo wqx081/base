@@ -10,14 +10,14 @@
 #include "base/util/slice.h"
 
 /// @brief Return the given status if it is not @c OK.
-#define KUDU_RETURN_NOT_OK(s) do { \
+#define BASE_RETURN_NOT_OK(s) do { \
     const ::base::util::Status& _s = (s);             \
     if (PREDICT_FALSE(!_s.ok())) return _s;     \
   } while (0);
 
 /// @brief Return the given status if it is not OK, but first clone it and
 ///   prepend the given message.
-#define KUDU_RETURN_NOT_OK_PREPEND(s, msg) do { \
+#define BASE_RETURN_NOT_OK_PREPEND(s, msg) do { \
     const ::base::util::Status& _s = (s);                              \
     if (PREDICT_FALSE(!_s.ok())) return _s.CloneAndPrepend(msg); \
   } while (0);
@@ -25,45 +25,45 @@
 /// @brief Return @c to_return if @c to_call returns a bad status.
 ///   The substitution for 'to_return' may reference the variable
 ///   @c s for the bad status.
-#define KUDU_RETURN_NOT_OK_RET(to_call, to_return) do { \
+#define BASE_RETURN_NOT_OK_RET(to_call, to_return) do { \
     const ::base::util::Status& s = (to_call);                \
     if (PREDICT_FALSE(!s.ok())) return (to_return);  \
   } while (0);
 
 /// @brief Emit a warning if @c to_call returns a bad status.
-#define KUDU_WARN_NOT_OK(to_call, warning_prefix) do { \
+#define BASE_WARN_NOT_OK(to_call, warning_prefix) do { \
     const ::base::util::Status& _s = (to_call);              \
     if (PREDICT_FALSE(!_s.ok())) { \
-      KUDU_LOG(WARNING) << (warning_prefix) << ": " << _s.ToString();  \
+      BASE_LOG(WARNING) << (warning_prefix) << ": " << _s.ToString();  \
     } \
   } while (0);
 
 /// @brief Log the given status and return immediately.
-#define KUDU_LOG_AND_RETURN(level, status) do { \
+#define BASE_LOG_AND_RETURN(level, status) do { \
     const ::base::util::Status& _s = (status);        \
-    KUDU_LOG(level) << _s.ToString(); \
+    BASE_LOG(level) << _s.ToString(); \
     return _s; \
   } while (0);
 
 /// @brief If the given status is not OK, log it and 'msg' at 'level' and return the status.
-#define KUDU_RETURN_NOT_OK_LOG(s, level, msg) do { \
+#define BASE_RETURN_NOT_OK_LOG(s, level, msg) do { \
     const ::base::util::Status& _s = (s);             \
     if (PREDICT_FALSE(!_s.ok())) { \
-      KUDU_LOG(level) << "Status: " << _s.ToString() << " " << (msg); \
+      BASE_LOG(level) << "Status: " << _s.ToString() << " " << (msg); \
       return _s;     \
     } \
   } while (0);
 
 /// @brief If @c to_call returns a bad status, CHECK immediately with
 ///   a logged message of @c msg followed by the status.
-#define KUDU_CHECK_OK_PREPEND(to_call, msg) do { \
+#define BASE_CHECK_OK_PREPEND(to_call, msg) do { \
     const ::base::util::Status& _s = (to_call);                   \
-    KUDU_CHECK(_s.ok()) << (msg) << ": " << _s.ToString();  \
+    BASE_CHECK(_s.ok()) << (msg) << ": " << _s.ToString();  \
   } while (0);
 
 /// @brief If the status is bad, CHECK immediately, appending the status to the
 ///   logged message.
-#define KUDU_CHECK_OK(s) KUDU_CHECK_OK_PREPEND(s, "Bad status")
+#define BASE_CHECK_OK(s) BASE_CHECK_OK_PREPEND(s, "Bad status")
 
 /// @file status.h
 ///
@@ -72,26 +72,26 @@
 /// careful to "namespace" our macros, to avoid colliding or overriding with
 /// similarly named macros belonging to the application.
 ///
-/// KUDU_HEADERS_USE_SHORT_STATUS_MACROS handles this behavioral change. When
+/// BASE_HEADERS_USE_SHORT_STATUS_MACROS handles this behavioral change. When
 /// defined, we're building Kudu and:
 /// @li Non-namespaced macros are allowed and mapped to the namespaced versions
 ///   defined above.
 /// @li Namespaced versions of glog macros are mapped to the real glog macros
 ///   (otherwise the macros are defined in the C++ client stubs).
 //
-//#ifdef KUDU_HEADERS_USE_SHORT_STATUS_MACROS
-#define RETURN_NOT_OK         KUDU_RETURN_NOT_OK
-#define RETURN_NOT_OK_PREPEND KUDU_RETURN_NOT_OK_PREPEND
-#define RETURN_NOT_OK_RET     KUDU_RETURN_NOT_OK_RET
-#define WARN_NOT_OK           KUDU_WARN_NOT_OK
-#define LOG_AND_RETURN        KUDU_LOG_AND_RETURN
-#define RETURN_NOT_OK_LOG     KUDU_RETURN_NOT_OK_LOG
-#define CHECK_OK_PREPEND      KUDU_CHECK_OK_PREPEND
-#define CHECK_OK              KUDU_CHECK_OK
+//#ifdef BASE_HEADERS_USE_SHORT_STATUS_MACROS
+#define RETURN_NOT_OK         BASE_RETURN_NOT_OK
+#define RETURN_NOT_OK_PREPEND BASE_RETURN_NOT_OK_PREPEND
+#define RETURN_NOT_OK_RET     BASE_RETURN_NOT_OK_RET
+#define WARN_NOT_OK           BASE_WARN_NOT_OK
+#define LOG_AND_RETURN        BASE_LOG_AND_RETURN
+#define RETURN_NOT_OK_LOG     BASE_RETURN_NOT_OK_LOG
+#define CHECK_OK_PREPEND      BASE_CHECK_OK_PREPEND
+#define CHECK_OK              BASE_CHECK_OK
 
 // These are standard glog macros.
-#define KUDU_LOG              LOG
-#define KUDU_CHECK            CHECK
+#define BASE_LOG              LOG
+#define BASE_CHECK            CHECK
 //#endif
 
 namespace base {
@@ -117,7 +117,6 @@ class  Status {
   ///   The status object to assign from.
   void operator=(const Status& s);
 
-#if __cplusplus >= 201103L
   /// Move the specified status (C++11).
   ///
   /// @param [in] s
@@ -129,7 +128,6 @@ class  Status {
   /// @param [in] s
   ///   rvalue reference to a Status object.
   void operator=(Status&& s);
-#endif
 
   /// @return A success status.
   static Status OK() { return Status(); }
@@ -380,7 +378,6 @@ inline void Status::operator=(const Status& s) {
   }
 }
 
-#if __cplusplus >= 201103L
 inline Status::Status(Status&& s) : state_(s.state_) {
   s.state_ = nullptr;
 }
@@ -392,7 +389,6 @@ inline void Status::operator=(Status&& s) {
     s.state_ = nullptr;
   }
 }
-#endif
 
 } // namespace util
 } // namespace base

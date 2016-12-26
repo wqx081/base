@@ -72,8 +72,8 @@ class  Slice {
     data_(reinterpret_cast<const uint8_t *>(s)),
     size_(strlen(s)) { }
 
-#define KUDU_HEADERS_USE_RICH_SLICE 1
-#ifdef KUDU_HEADERS_USE_RICH_SLICE
+#define BASE_HEADERS_USE_RICH_SLICE 1
+#ifdef BASE_HEADERS_USE_RICH_SLICE
   /// Create a slice that refers to the contents of a faststring.
   ///
   /// @note Further appends to the faststring may invalidate this slice.
@@ -219,7 +219,7 @@ class  Slice {
   friend bool operator==(const Slice& x, const Slice& y);
 
   static bool MemEqual(const void* a, const void* b, size_t n) {
-#ifdef KUDU_HEADERS_USE_RICH_SLICE
+#ifdef BASE_HEADERS_USE_RICH_SLICE
     return strings::memeq(a, b, n);
 #else
     return memcmp(a, b, n) == 0;
@@ -227,7 +227,7 @@ class  Slice {
   }
 
   static int MemCompare(const void* a, const void* b, size_t n) {
-#ifdef KUDU_HEADERS_USE_RICH_SLICE
+#ifdef BASE_HEADERS_USE_RICH_SLICE
     return strings::fastmemcmp_inlined(a, b, n);
 #else
     return memcmp(a, b, n);
@@ -308,4 +308,4 @@ struct SliceMap {
 } // namespace util
 } // namespace base
 
-#endif  // KUDU_UTIL_SLICE_H_
+#endif  // BASE_UTIL_SLICE_H_
