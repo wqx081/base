@@ -6,8 +6,13 @@ CXX=g++
 
 CPP_SOURCES :=  \
 	base64.cc	\
+	condition_variable.cc \
+	env.cc \
 	faststring.cc \
 	malloc.cc \
+	monotime.cc \
+	mutex.cc \
+	semaphore.cc \
 	slice.cc	\
 	status_callback.cc	\
 	status.cc	\

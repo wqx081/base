@@ -1,5 +1,5 @@
 #ifndef BASE_UTIL_BASE64_H_
-#define BASE_UTIL__BASE64_H_
+#define BASE_UTIL_BASE64_H_
 
 #include <string>
 
@@ -16,5 +16,4 @@ Status Base64Decode(StringPiece data, std::string* decoded);
 
 } // namespace util
 } // namespace base 
-
 #endif // MCS_BASE_STRINGS_BASE64_H_
