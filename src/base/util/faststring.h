@@ -8,7 +8,6 @@
 #include "base/core/strings/fastmem.h"
 
 namespace base {
-namespace util {
 
 // A faststring is similar to a std::string, except that it is faster for many
 // common use cases (in particular, resize() will fill with uninitialized data
@@ -222,6 +221,5 @@ class faststring {
   size_t capacity_;
 };
 
-} // namespace util
 } // namespace base
 #endif

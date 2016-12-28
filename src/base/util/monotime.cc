@@ -12,7 +12,6 @@
 #include <limits>
 
 namespace base {
-namespace util {
 
 
 #define MAX_MONOTONIC_SECONDS \
@@ -283,5 +282,4 @@ MonoDelta operator-(const MonoTime& t_end, const MonoTime& t_beg) {
   return t_end.GetDeltaSince(t_beg);
 }
 
-} // namespace util
 } // namespace base

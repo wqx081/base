@@ -7,7 +7,6 @@
 #include "base/util/mutex.h"
 
 namespace base {
-namespace util {
 
 class ConditionVariable {
  public:
@@ -26,6 +25,5 @@ class ConditionVariable {
   DISALLOW_COPY_AND_ASSIGN(ConditionVariable);
 };
 
-} // namespace util
 } // namespace base
 #endif // BASE_UTIL_CONDITION_VARIABLE_H_

@@ -6,7 +6,6 @@
 #include "base/core/callback_forward.h"
 
 namespace base {
-namespace util {
 
 class Status;
 
@@ -28,7 +27,6 @@ typedef core::Callback<Status(void)> StatusClosure;
 // To be used when setting a StatusClosure is optional.
 extern Status DoNothingStatusClosure();
 
-} // namespace util
 } // namespace base
 
 #endif

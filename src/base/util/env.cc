@@ -1,7 +1,6 @@
 #include "base/util/env.h"
 
 namespace base {
-namespace util {
 
 Env::~Env() {}
 
@@ -75,5 +74,4 @@ Status ReadFileToString(Env* env, const std::string& fname, faststring* result) 
   return s;
 }
 
-} // namespace util
 } // namespace base

@@ -4,7 +4,6 @@
 #include "base/util/status.h"
 
 namespace base {
-namespace util {
 
 Status Slice::check_size(size_t expected_size) const {
   if (PREDICT_FALSE(size() != expected_size)) {
@@ -54,5 +53,4 @@ std::string Slice::ToDebugString(size_t max_len) const {
   return ret;
 }
 
-} // namespace util 
 } // namespace base

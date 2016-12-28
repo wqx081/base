@@ -1,12 +1,6 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include "base/core/ref_counted.h"
-#include "base/core/atomic_ref_count.h"
 
 #include <glog/logging.h>
-
 #include "base/core/threading/thread_collision_warner.h"
 
 namespace core {
@@ -54,7 +48,7 @@ bool RefCountedBase::Release() const {
 }
 
 bool RefCountedThreadSafeBase::HasOneRef() const {
-  return core::AtomicRefCountIsOne(
+  return core::RefCountIsOne(
       &const_cast<RefCountedThreadSafeBase*>(this)->ref_count_);
 }
 
@@ -75,15 +69,15 @@ void RefCountedThreadSafeBase::AddRef() const {
 #ifndef NDEBUG
   DCHECK(!in_dtor_);
 #endif
-  core::AtomicRefCountInc(&ref_count_);
+  core::RefCountInc(&ref_count_);
 }
 
 bool RefCountedThreadSafeBase::Release() const {
 #ifndef NDEBUG
   DCHECK(!in_dtor_);
-  DCHECK(!core::AtomicRefCountIsZero(&ref_count_));
+  DCHECK(!core::RefCountIsZero(&ref_count_));
 #endif
-  if (!core::AtomicRefCountDec(&ref_count_)) {
+  if (!core::RefCountDec(&ref_count_)) {
 #ifndef NDEBUG
     in_dtor_ = true;
 #endif

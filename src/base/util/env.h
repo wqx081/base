@@ -10,7 +10,6 @@
 #include "base/util/status.h"
 
 namespace base {
-namespace util {
 
 class FileLock;
 class RandomAccessFile;
@@ -116,7 +115,7 @@ class Env {
   virtual Status GetTotalRAMBytes(int64_t* ram) = 0;
   virtual int64_t GetOpenFileLimit() = 0;
   virtual void IncreaseOpenFileLimit() = 0;
-  virtual Status IsOnExtFileSystem(const std::string& path, bool* result) = 0;
+  virtual Status IsOnExtFilesystem(const std::string& path, bool* result) = 0;
   virtual std::string GetKernelRelease() = 0;
   
   // Misc
@@ -238,6 +237,5 @@ extern Status WriteStringToFileSync(Env* env, const Slice& data,
 extern Status ReadFileToString(Env* env, const std::string& fname,
                                faststring* result);
 
-} // namespace util
 } // namespace base
 #endif // BASE_UTIL_ENV_H_

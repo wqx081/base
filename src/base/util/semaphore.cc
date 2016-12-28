@@ -5,7 +5,6 @@
 #include <glog/logging.h>
 
 namespace base {
-namespace util {
 
 class Semaphore::Impl {
  public:
@@ -107,5 +106,4 @@ int Semaphore::GetValue() {
   return impl->GetValue();
 }
 
-} // namespace util
 } // namespace base

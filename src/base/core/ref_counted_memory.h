@@ -1,9 +1,5 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-#ifndef KUDU_GUTIL_REF_COUNTED_MEMORY_H_
-#define KUDU_GUTIL_REF_COUNTED_MEMORY_H_
+#ifndef BASE_CORE_REF_COUNTED_MEMORY_H_
+#define BASE_CORE_REF_COUNTED_MEMORY_H_
 
 #include <string>
 #include <vector>
@@ -21,7 +17,7 @@ namespace core {
 // A generic interface to memory. This object is reference counted because one
 // of its two subclasses own the data they carry, and we need to have
 // heterogeneous containers of these two types of memory.
-class BASE_EXPORT RefCountedMemory
+class RefCountedMemory
     : public RefCountedThreadSafe<RefCountedMemory> {
  public:
   // Retrieves a pointer to the beginning of the data we point to. If the data
@@ -47,7 +43,7 @@ class BASE_EXPORT RefCountedMemory
 
 // An implementation of RefCountedMemory, where the ref counting does not
 // matter.
-class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
+class RefCountedStaticMemory : public RefCountedMemory {
  public:
   RefCountedStaticMemory()
       : data_(NULL), length_(0) {}

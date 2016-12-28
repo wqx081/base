@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 namespace base {
-namespace util {
 
 // Simple wrapper for malloc_usable_size().
 //
@@ -12,7 +11,6 @@ namespace util {
 // on const pointers (i.e. "this" in a const method).
 int64_t base_malloc_usable_size(const void* obj);
 
-} // namespace util
 } // namespace base
 
 #endif // BASE_UTIL_MALLOC_H

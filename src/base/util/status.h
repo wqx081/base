@@ -11,14 +11,14 @@
 
 /// @brief Return the given status if it is not @c OK.
 #define BASE_RETURN_NOT_OK(s) do { \
-    const ::base::util::Status& _s = (s);             \
+    const ::base::Status& _s = (s);             \
     if (PREDICT_FALSE(!_s.ok())) return _s;     \
   } while (0);
 
 /// @brief Return the given status if it is not OK, but first clone it and
 ///   prepend the given message.
 #define BASE_RETURN_NOT_OK_PREPEND(s, msg) do { \
-    const ::base::util::Status& _s = (s);                              \
+    const ::base::Status& _s = (s);                              \
     if (PREDICT_FALSE(!_s.ok())) return _s.CloneAndPrepend(msg); \
   } while (0);
 
@@ -26,13 +26,13 @@
 ///   The substitution for 'to_return' may reference the variable
 ///   @c s for the bad status.
 #define BASE_RETURN_NOT_OK_RET(to_call, to_return) do { \
-    const ::base::util::Status& s = (to_call);                \
+    const ::base::Status& s = (to_call);                \
     if (PREDICT_FALSE(!s.ok())) return (to_return);  \
   } while (0);
 
 /// @brief Emit a warning if @c to_call returns a bad status.
 #define BASE_WARN_NOT_OK(to_call, warning_prefix) do { \
-    const ::base::util::Status& _s = (to_call);              \
+    const ::base::Status& _s = (to_call);              \
     if (PREDICT_FALSE(!_s.ok())) { \
       BASE_LOG(WARNING) << (warning_prefix) << ": " << _s.ToString();  \
     } \
@@ -40,14 +40,14 @@
 
 /// @brief Log the given status and return immediately.
 #define BASE_LOG_AND_RETURN(level, status) do { \
-    const ::base::util::Status& _s = (status);        \
+    const ::base::Status& _s = (status);        \
     BASE_LOG(level) << _s.ToString(); \
     return _s; \
   } while (0);
 
 /// @brief If the given status is not OK, log it and 'msg' at 'level' and return the status.
 #define BASE_RETURN_NOT_OK_LOG(s, level, msg) do { \
-    const ::base::util::Status& _s = (s);             \
+    const ::base::Status& _s = (s);             \
     if (PREDICT_FALSE(!_s.ok())) { \
       BASE_LOG(level) << "Status: " << _s.ToString() << " " << (msg); \
       return _s;     \
@@ -57,7 +57,7 @@
 /// @brief If @c to_call returns a bad status, CHECK immediately with
 ///   a logged message of @c msg followed by the status.
 #define BASE_CHECK_OK_PREPEND(to_call, msg) do { \
-    const ::base::util::Status& _s = (to_call);                   \
+    const ::base::Status& _s = (to_call);                   \
     BASE_CHECK(_s.ok()) << (msg) << ": " << _s.ToString();  \
   } while (0);
 
@@ -95,7 +95,6 @@
 //#endif
 
 namespace base {
-namespace util {
 
 /// @brief A representation of an operation's outcome.
 class  Status {
@@ -390,7 +389,6 @@ inline void Status::operator=(Status&& s) {
   }
 }
 
-} // namespace util
 } // namespace base
 
 #endif  // BASE_UTIL_STATUS_H_

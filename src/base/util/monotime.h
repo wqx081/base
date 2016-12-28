@@ -14,7 +14,6 @@ struct timeval;
 struct timespec;
 
 namespace base {
-namespace util {
 
 class MonoTime;
 
@@ -116,6 +115,5 @@ MonoTime operator+(const MonoTime& t, const MonoDelta& d);
 MonoTime operator-(const MonoTime& t, const MonoDelta& d);
 MonoDelta operator-(const MonoTime& t, const MonoTime& begin);
 
-} // namespace util
 } // namespace base
 #endif // BASE_UTIL_MONOTIME_H_

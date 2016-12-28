@@ -7,7 +7,6 @@
 #include "base/util/malloc.h"
 
 namespace base {
-namespace util {
 
 const char* Status::CopyState(const char* state) {
   uint32_t size;
@@ -157,5 +156,4 @@ size_t Status::memory_footprint_including_this() const {
   return base_malloc_usable_size(this) + memory_footprint_excluding_this();
 }
 
-} // namespace util 
 } // namespace base

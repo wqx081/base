@@ -9,7 +9,6 @@
 #include <memory>
 
 namespace base {
-namespace util {
 
 class Mutex {
   friend class ConditionVariable;
@@ -81,6 +80,5 @@ class MutexLock {
   DISALLOW_COPY_AND_ASSIGN(MutexLock);
 };
 
-} // namespace util
 } // namespace base
 #endif // BASE_UTIL_MUTEX_H_

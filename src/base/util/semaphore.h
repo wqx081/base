@@ -9,7 +9,6 @@
 #include <memory>
 
 namespace base {
-namespace util {
 
 // Briage Pattern
 class Semaphore {
@@ -35,5 +34,4 @@ class Semaphore {
 };
 
 } // namespace base
-} // namespace core
 #endif // BASE_UTIL_SEMAPHORE_H_

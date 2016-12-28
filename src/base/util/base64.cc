@@ -4,7 +4,6 @@
 #include <memory>
 
 namespace base {
-namespace util {
 
 namespace {
 // This array must have signed type.
@@ -181,5 +180,4 @@ Status Base64Encode(StringPiece source, bool with_padding, std::string* encoded)
   return Status::OK();
 }
 
-}  // namespace util
 }  // namespace base

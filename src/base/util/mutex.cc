@@ -5,7 +5,6 @@
 #include <pthread.h>
 
 namespace base {
-namespace util {
 
 class Mutex::Impl {
  public:
@@ -65,5 +64,4 @@ void* Mutex::GetNativeHandler() {
   return impl_->GetNativeHandler();
 }
 
-} // namespace util
 } // namespace base

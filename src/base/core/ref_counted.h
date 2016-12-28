@@ -1,14 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #ifndef BASE_MEMORY_REF_COUNTED_H_
 #define BASE_MEMORY_REF_COUNTED_H_
 
 #include <cassert>
 
-
-#include "base/core/atomic_ref_count.h"
+#include "base/core/atomic_refcount.h"
 #include "base/core/port.h"
 #include "base/core/threading/thread_collision_warner.h"
 
@@ -172,7 +167,7 @@ class RefCountedData
   ~RefCountedData() {}
 };
 
-}  // namespace core
+}  // namespace kudu
 
 //
 // A smart pointer class for reference counted objects.  Use this class instead

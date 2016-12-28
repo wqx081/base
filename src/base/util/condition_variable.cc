@@ -5,7 +5,6 @@
 #include <errno.h>
 
 namespace base {
-namespace util {
 
 class ConditionVariable::Impl {
  public:
@@ -94,5 +93,4 @@ void ConditionVariable::Signal() {
   impl_->Signal();
 }
 
-} // namespace util
 } // namespace base

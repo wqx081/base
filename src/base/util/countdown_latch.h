@@ -7,7 +7,6 @@
 #include "base/util/mutex.h"
 
 namespace base {
-namespace util {
 
 class CountDownLatch {
  public:
@@ -95,6 +94,5 @@ class CountDownOnScopeExit {
   CountDownLatch* latch_;
 };
 
-} // namespace util
 } // namespace base
 #endif // BASE_UTIL_COUNTDOWN_LATCH_H_

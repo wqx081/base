@@ -5,7 +5,6 @@
 using std::string;
 
 namespace base {
-namespace util {
 
 
 void DoNothingStatusCB(const Status& /* status */) {}
@@ -19,4 +18,3 @@ void CrashIfNotOkStatusCB(const string& message, const Status& status) {
 Status DoNothingStatusClosure() { return Status::OK(); }
 
 } // end namespace mprmpr
-}

@@ -1,7 +1,3 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include "base/core/ref_counted_memory.h"
 
 #include <stdlib.h>
@@ -96,4 +92,4 @@ RefCountedMallocedMemory::~RefCountedMallocedMemory() {
   free(data_);
 }
 
-}  //  namespace core
+}  //  namespace kudu

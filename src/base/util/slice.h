@@ -13,7 +13,6 @@
 #include "base/util/faststring.h"
 
 namespace base {
-namespace util {
 
 class Status;
 
@@ -305,7 +304,6 @@ struct SliceMap {
   typedef std::map<Slice, T, Slice::Comparator> type;
 };
 
-} // namespace util
 } // namespace base
 
 #endif  // BASE_UTIL_SLICE_H_

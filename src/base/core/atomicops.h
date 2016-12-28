@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-// For atomic operations on reference counts, see atomic_refcount.h.
+// For atomic operations on statistics counters, see atomic_stats_counter.h.
 // For atomic operations on sequence numbers, see atomic_sequence_num.h.
+// For atomic operations on reference counts, see atomic_refcount.h.
+
+// Some fast atomic operations -- typically with machine-dependent
+// implementations.  This file may need editing as Google code is
+// ported to different architectures.
 
 // The routines exported by this module are subtle.  If you use them, even if
 // you get the code right, it will depend on careful reasoning about atomicity
@@ -16,35 +17,67 @@
 // implementations on other archtectures will cause your code to break.  If you
 // do not know what you are doing, avoid these routines, and use a Mutex.
 //
+// These following lower-level operations are typically useful only to people
+// implementing higher-level synchronization operations like spinlocks,
+// mutexes, and condition-variables.  They combine CompareAndSwap(),
+// addition, exchange, a load, or a store with appropriate memory-ordering
+// instructions.  "Acquire" operations ensure that no later memory access by
+// the same thread can be reordered ahead of the operation.  "Release"
+// operations ensure that no previous memory access by the same thread can be
+// reordered after the operation.  "Barrier" operations have both "Acquire" and
+// "Release" semantics.  A MemoryBarrier() has "Barrier" semantics, but does no
+// memory access.  "NoBarrier" operations have no barrier:  the CPU is
+// permitted to reorder them freely (as seen by other threads), even in ways
+// the appear to violate functional dependence, just as it can for any normal
+// variable access.
+//
 // It is incorrect to make direct assignments to/from an atomic variable.
 // You should use one of the Load or Store routines.  The NoBarrier
 // versions are provided when no barriers are needed:
 //   NoBarrier_Store()
 //   NoBarrier_Load()
 // Although there are currently no compiler enforcement, you are encouraged
-// to use these.
+// to use these.  Moreover, if you choose to use core::subtle::Atomic64 type,
+// you MUST use one of the Load or Store routines to get correct behavior
+// on 32-bit platforms.
 //
+// The intent is eventually to put all of these routines in namespace
+// core::subtle
 
-#ifndef BASE_ATOMICOPS_H_
-#define BASE_ATOMICOPS_H_
+#ifndef THREAD_ATOMICOPS_H_
+#define THREAD_ATOMICOPS_H_
 
 #include <stdint.h>
 
-// Small C++ header which defines implementation specific macros used to
-// identify the STL implementation.
-// - libc++: captures __config for _LIBCPP_VERSION
-// - libstdc++: captures bits/c++config.h for __GLIBCXX__
-#include <cstddef>
+// ------------------------------------------------------------------------
+// Include the platform specific implementations of the types
+// and operations listed below.  Implementations are to provide Atomic32
+// and Atomic64 operations. If there is a mismatch between intptr_t and
+// the Atomic32 or Atomic64 types for a platform, the platform-specific header
+// should define the macro, AtomicWordCastType in a clause similar to the
+// following:
+// #if ...pointers are 64 bits...
+// # define AtomicWordCastType core::subtle::Atomic64
+// #else
+// # define AtomicWordCastType Atomic32
+// #endif
+// ------------------------------------------------------------------------
+
+#include "base/core/atomicops-internals-x86.h"
+
+// Signed type that can hold a pointer and supports the atomic ops below, as
+// well as atomic loads and stores.  Instances must be naturally-aligned.
+typedef intptr_t AtomicWord;
+
+#ifdef AtomicWordCastType
+// ------------------------------------------------------------------------
+// This section is needed only when explicit type casting is required to
+// cast AtomicWord to one of the basic atomic types (Atomic64 or Atomic32).
+// It also serves to document the AtomicWord interface.
+// ------------------------------------------------------------------------
 
 namespace core {
 namespace subtle {
-
-typedef int32_t Atomic32;
-typedef intptr_t Atomic64;
-
-// Use AtomicWord for a machine-sized pointer.  It will use the Atomic32 or
-// Atomic64 routines below, depending on your architecture.
-typedef intptr_t AtomicWord;
 
 // Atomically execute:
 //      result = *ptr;
@@ -56,51 +89,149 @@ typedef intptr_t AtomicWord;
 // Always return the old value of "*ptr"
 //
 // This routine implies no memory barriers.
-Atomic32 NoBarrier_CompareAndSwap(volatile Atomic32* ptr,
-                                  Atomic32 old_value,
-                                  Atomic32 new_value);
+inline AtomicWord NoBarrier_CompareAndSwap(volatile AtomicWord* ptr,
+                                           AtomicWord old_value,
+                                           AtomicWord new_value) {
+  return NoBarrier_CompareAndSwap(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr),
+      old_value, new_value);
+}
 
 // Atomically store new_value into *ptr, returning the previous value held in
 // *ptr.  This routine implies no memory barriers.
-Atomic32 NoBarrier_AtomicExchange(volatile Atomic32* ptr, Atomic32 new_value);
+inline AtomicWord NoBarrier_AtomicExchange(volatile AtomicWord* ptr,
+                                           AtomicWord new_value) {
+  return NoBarrier_AtomicExchange(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), new_value);
+}
+
+inline AtomicWord Acquire_AtomicExchange(volatile AtomicWord* ptr,
+                                         AtomicWord new_value) {
+  return Acquire_AtomicExchange(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), new_value);
+}
+
+inline AtomicWord Release_AtomicExchange(volatile AtomicWord* ptr,
+                                         AtomicWord new_value) {
+  return Release_AtomicExchange(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), new_value);
+}
 
 // Atomically increment *ptr by "increment".  Returns the new value of
-// *ptr with the increment applied.  This routine implies no memory barriers.
-Atomic32 NoBarrier_AtomicIncrement(volatile Atomic32* ptr, Atomic32 increment);
+// *ptr with the increment applied.  This routine implies no memory
+// barriers.
+inline AtomicWord NoBarrier_AtomicIncrement(volatile AtomicWord* ptr,
+                                            AtomicWord increment) {
+  return NoBarrier_AtomicIncrement(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), increment);
+}
 
+inline AtomicWord Barrier_AtomicIncrement(volatile AtomicWord* ptr,
+                                          AtomicWord increment) {
+  return Barrier_AtomicIncrement(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), increment);
+}
+
+inline AtomicWord Acquire_CompareAndSwap(volatile AtomicWord* ptr,
+                                         AtomicWord old_value,
+                                         AtomicWord new_value) {
+  return core::subtle::Acquire_CompareAndSwap(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr),
+      old_value, new_value);
+}
+
+inline AtomicWord Release_CompareAndSwap(volatile AtomicWord* ptr,
+                                         AtomicWord old_value,
+                                         AtomicWord new_value) {
+  return core::subtle::Release_CompareAndSwap(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr),
+      old_value, new_value);
+}
+
+inline void NoBarrier_Store(volatile AtomicWord *ptr, AtomicWord value) {
+  NoBarrier_Store(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
+}
+
+inline void Acquire_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  return core::subtle::Acquire_Store(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
+}
+
+inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  return core::subtle::Release_Store(
+      reinterpret_cast<volatile AtomicWordCastType*>(ptr), value);
+}
+
+inline AtomicWord NoBarrier_Load(volatile const AtomicWord *ptr) {
+  return NoBarrier_Load(
+      reinterpret_cast<volatile const AtomicWordCastType*>(ptr));
+}
+
+inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
+  return core::subtle::Acquire_Load(
+      reinterpret_cast<volatile const AtomicWordCastType*>(ptr));
+}
+
+inline AtomicWord Release_Load(volatile const AtomicWord* ptr) {
+  return core::subtle::Release_Load(
+      reinterpret_cast<volatile const AtomicWordCastType*>(ptr));
+}
+
+}  // namespace core::subtle
+}  // namespace base
+#endif  // AtomicWordCastType
+
+// ------------------------------------------------------------------------
+// Commented out type definitions and method declarations for documentation
+// of the interface provided by this module.
+// ------------------------------------------------------------------------
+
+#if 0
+
+// Signed 32-bit type that supports the atomic ops below, as well as atomic
+// loads and stores.  Instances must be naturally aligned.  This type differs
+// from AtomicWord in 64-bit binaries where AtomicWord is 64-bits.
+typedef int32_t Atomic32;
+
+// Corresponding operations on Atomic32
+namespace base {
+namespace subtle {
+
+// Signed 64-bit type that supports the atomic ops below, as well as atomic
+// loads and stores.  Instances must be naturally aligned.  This type differs
+// from AtomicWord in 32-bit binaries where AtomicWord is 32-bits.
+typedef int64_t Atomic64;
+
+Atomic32 NoBarrier_CompareAndSwap(volatile Atomic32* ptr,
+                                  Atomic32 old_value,
+                                  Atomic32 new_value);
+Atomic32 NoBarrier_AtomicExchange(volatile Atomic32* ptr, Atomic32 new_value);
+Atomic32 Acquire_AtomicExchange(volatile Atomic32* ptr, Atomic32 new_value);
+Atomic32 Release_AtomicExchange(volatile Atomic32* ptr, Atomic32 new_value);
+Atomic32 NoBarrier_AtomicIncrement(volatile Atomic32* ptr, Atomic32 increment);
 Atomic32 Barrier_AtomicIncrement(volatile Atomic32* ptr,
                                  Atomic32 increment);
-
-// These following lower-level operations are typically useful only to people
-// implementing higher-level synchronization operations like spinlocks,
-// mutexes, and condition-variables.  They combine CompareAndSwap(), a load, or
-// a store with appropriate memory-ordering instructions.  "Acquire" operations
-// ensure that no later memory access can be reordered ahead of the operation.
-// "Release" operations ensure that no previous memory access can be reordered
-// after the operation.  "Barrier" operations have both "Acquire" and "Release"
-// semantics.   A MemoryBarrier() has "Barrier" semantics, but does no memory
-// access.
 Atomic32 Acquire_CompareAndSwap(volatile Atomic32* ptr,
                                 Atomic32 old_value,
                                 Atomic32 new_value);
 Atomic32 Release_CompareAndSwap(volatile Atomic32* ptr,
                                 Atomic32 old_value,
                                 Atomic32 new_value);
-
-void MemoryBarrier();
 void NoBarrier_Store(volatile Atomic32* ptr, Atomic32 value);
 void Acquire_Store(volatile Atomic32* ptr, Atomic32 value);
 void Release_Store(volatile Atomic32* ptr, Atomic32 value);
-
 Atomic32 NoBarrier_Load(volatile const Atomic32* ptr);
 Atomic32 Acquire_Load(volatile const Atomic32* ptr);
 Atomic32 Release_Load(volatile const Atomic32* ptr);
 
-// 64-bit atomic operations (only available on 64-bit processors).
+// Corresponding operations on Atomic64
 Atomic64 NoBarrier_CompareAndSwap(volatile Atomic64* ptr,
                                   Atomic64 old_value,
                                   Atomic64 new_value);
 Atomic64 NoBarrier_AtomicExchange(volatile Atomic64* ptr, Atomic64 new_value);
+Atomic64 Acquire_AtomicExchange(volatile Atomic64* ptr, Atomic64 new_value);
+Atomic64 Release_AtomicExchange(volatile Atomic64* ptr, Atomic64 new_value);
 Atomic64 NoBarrier_AtomicIncrement(volatile Atomic64* ptr, Atomic64 increment);
 Atomic64 Barrier_AtomicIncrement(volatile Atomic64* ptr, Atomic64 increment);
 
@@ -116,10 +247,104 @@ void Release_Store(volatile Atomic64* ptr, Atomic64 value);
 Atomic64 NoBarrier_Load(volatile const Atomic64* ptr);
 Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 Atomic64 Release_Load(volatile const Atomic64* ptr);
+}  // namespace core::subtle
+}  // namespace base
 
-}  // namespace subtle
-}  // namespace core
+void MemoryBarrier();
 
-#include "base/core/atomicops_internals_portable.h"
+void PauseCPU();
 
-#endif  // BASE_ATOMICOPS_H_
+#endif  // 0
+
+
+// ------------------------------------------------------------------------
+// The following are to be deprecated when all uses have been changed to
+// use the core::subtle namespace.
+// ------------------------------------------------------------------------
+
+#ifdef AtomicWordCastType
+// AtomicWord versions to be deprecated
+inline AtomicWord Acquire_CompareAndSwap(volatile AtomicWord* ptr,
+                                         AtomicWord old_value,
+                                         AtomicWord new_value) {
+  return core::subtle::Acquire_CompareAndSwap(ptr, old_value, new_value);
+}
+
+inline AtomicWord Release_CompareAndSwap(volatile AtomicWord* ptr,
+                                         AtomicWord old_value,
+                                         AtomicWord new_value) {
+  return core::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
+}
+
+inline void Acquire_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  return core::subtle::Acquire_Store(ptr, value);
+}
+
+inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  return core::subtle::Release_Store(ptr, value);
+}
+
+inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {
+  return core::subtle::Acquire_Load(ptr);
+}
+
+inline AtomicWord Release_Load(volatile const AtomicWord* ptr) {
+  return core::subtle::Release_Load(ptr);
+}
+#endif  // AtomicWordCastType
+
+// 32-bit Acquire/Release operations to be deprecated.
+
+inline Atomic32 Acquire_CompareAndSwap(volatile Atomic32* ptr,
+                                       Atomic32 old_value,
+                                       Atomic32 new_value) {
+  return core::subtle::Acquire_CompareAndSwap(ptr, old_value, new_value);
+}
+inline Atomic32 Release_CompareAndSwap(volatile Atomic32* ptr,
+                                       Atomic32 old_value,
+                                       Atomic32 new_value) {
+  return core::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
+}
+inline void Acquire_Store(volatile Atomic32* ptr, Atomic32 value) {
+  core::subtle::Acquire_Store(ptr, value);
+}
+inline void Release_Store(volatile Atomic32* ptr, Atomic32 value) {
+  return core::subtle::Release_Store(ptr, value);
+}
+inline Atomic32 Acquire_Load(volatile const Atomic32* ptr) {
+  return core::subtle::Acquire_Load(ptr);
+}
+inline Atomic32 Release_Load(volatile const Atomic32* ptr) {
+  return core::subtle::Release_Load(ptr);
+}
+
+// 64-bit Acquire/Release operations to be deprecated.
+
+inline core::subtle::Atomic64 Acquire_CompareAndSwap(
+    volatile core::subtle::Atomic64* ptr,
+    core::subtle::Atomic64 old_value, core::subtle::Atomic64 new_value) {
+  return core::subtle::Acquire_CompareAndSwap(ptr, old_value, new_value);
+}
+inline core::subtle::Atomic64 Release_CompareAndSwap(
+    volatile core::subtle::Atomic64* ptr,
+    core::subtle::Atomic64 old_value, core::subtle::Atomic64 new_value) {
+  return core::subtle::Release_CompareAndSwap(ptr, old_value, new_value);
+}
+inline void Acquire_Store(
+    volatile core::subtle::Atomic64* ptr, core::subtle::Atomic64 value) {
+  core::subtle::Acquire_Store(ptr, value);
+}
+inline void Release_Store(
+    volatile core::subtle::Atomic64* ptr, core::subtle::Atomic64 value) {
+  return core::subtle::Release_Store(ptr, value);
+}
+inline core::subtle::Atomic64 Acquire_Load(
+    volatile const core::subtle::Atomic64* ptr) {
+  return core::subtle::Acquire_Load(ptr);
+}
+inline core::subtle::Atomic64 Release_Load(
+    volatile const core::subtle::Atomic64* ptr) {
+  return core::subtle::Release_Load(ptr);
+}
+
+#endif  // THREAD_ATOMICOPS_H_

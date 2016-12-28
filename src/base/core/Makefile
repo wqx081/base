@@ -4,6 +4,7 @@ CXXFLAGS += -std=c++11 -Wall -Werror -Wno-sign-compare -Wno-deprecated -g -c -o
 CXX=g++
 
 CPP_SOURCES :=	\
+	atomicops-internals-x86.cc \
 	bits.cc	\
 	callback_internal.cc	\
 	cpu.cc	\
