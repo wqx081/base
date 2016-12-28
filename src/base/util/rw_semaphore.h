@@ -1,5 +1,5 @@
-#ifndef KUDU_UTIL_RW_SEMAPHORE_H
-#define KUDU_UTIL_RW_SEMAPHORE_H
+#ifndef BASE_RW_SEMAPHORE_H
+#define BASE_RW_SEMAPHORE_H
 
 #include "base/util/yield.h"
 #include <glog/logging.h>
@@ -183,4 +183,4 @@ class rw_semaphore {
 };
 
 } // namespace kudu
-#endif /* KUDU_UTIL_RW_SEMAPHORE_H */
+#endif /* BASE_RW_SEMAPHORE_H */

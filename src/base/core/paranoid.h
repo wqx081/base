@@ -8,7 +8,7 @@
 
 #include <glog/logging.h>
 
-#include "kudu/gutil/logging-inl.h"
+#include "base/core/logging-inl.h"
 
 // Sanitize a bool value which might be sour.
 //

@@ -25,7 +25,7 @@
 #include "base/util/mutex.h"
 #include "base/util/stopwatch.h"
 #include "base/util/yield.h"
-#include "base/util/web_callback_registry.h"
+#include "base/http/web_callback_registry.h"
 
 namespace base {
 

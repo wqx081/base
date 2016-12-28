@@ -1,7 +1,3 @@
-// Copyright 2002 and onwards Google Inc.
-//
-// Derived from code by Moses Charikar
-
 #include "base/core/bits.h"
 
 #include <assert.h>

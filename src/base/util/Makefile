@@ -13,15 +13,23 @@ CPP_SOURCES :=  \
 	env_posix.cc \
 	faststring.cc \
 	path_util.cc \
+	jsonreader.cc \
+	jsonwriter.cc \
 	locks.cc \
 	malloc.cc \
 	monotime.cc \
 	mutex.cc \
 	once.cc \
+	random_util.cc \
+	rw_mutex.cc \
+	rwc_lock.cc \
 	semaphore.cc \
 	slice.cc	\
 	status_callback.cc	\
 	status.cc	\
+	subprocess.cc \
+	test_util.cc \
+	test_util_prod.cc \
 	thread.cc \
 	threadpool.cc \
 	threadlocal.cc \

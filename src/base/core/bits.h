@@ -1,16 +1,4 @@
-// Copyright 2002 and onwards Google Inc.
-//
-// A collection of useful (static) bit-twiddling functions.
-
 #include <glog/logging.h>
-
-#if 0
-#include "kudu/gutil/basictypes.h"
-#include "kudu/gutil/integral_types.h"
-#include "kudu/gutil/logging-inl.h"
-#include "kudu/gutil/macros.h"
-#endif
-
 
 #include "base/core/basictypes.h"
 #include "base/core/integral_types.h"
@@ -163,10 +151,8 @@ inline int Bits::Log2FloorNonZero64(uint64 n) {
 inline int Bits::FindLSBSetNonZero64(uint64 n) {
   return __builtin_ctzll(n);
 }
-#elif defined(_MSC_VER)
-#include "kudu/gutil/bits-internal-windows.h"
 #else
-#include "kudu/gutil/bits-internal-unknown.h"
+#error "Not suported"
 #endif
 
 inline int Bits::CountOnesInByte(unsigned char n) {

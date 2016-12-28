@@ -1,5 +1,5 @@
-#ifndef BASE_UTIL_WEB_CALLBACK_REGISTRY_H_
-#define BASE_UTIL_WEB_CALLBACK_REGISTRY_H_
+#ifndef BASE_HTTP_WEB_CALLBACK_REGISTRY_H_
+#define BASE_HTTP_WEB_CALLBACK_REGISTRY_H_
 
 #include <iosfwd>
 #include <map>
@@ -32,4 +32,4 @@ class WebCallbackRegistry {
 };
 
 } // namespace base
-#endif // BASE_UTIL_WEB_CALLBACK_REGISTRY_H_
+#endif // BASE_HTTP_WEB_CALLBACK_REGISTRY_H_
