@@ -13,7 +13,7 @@ class BaseOnceDynamic;
 
 namespace internal {
 
-// Cheap, single-arg "bound callback" (similar to kudu::Callback) for use
+// Cheap, single-arg "bound callback" (similar to base::Callback) for use
 // in BaseOnceDynamic.
 template<typename T>
 struct MemberFunc {
@@ -54,7 +54,7 @@ class BaseOnceDynamic {
     // of the argument:
     //
     //   runtime error: call to function
-    //   kudu::cfile::BloomFileReader::InitOnceCb(kudu::cfile::BloomFileReader*)
+    //   base::cfile::BloomFileReader::InitOnceCb(base::cfile::BloomFileReader*)
     //   through pointer to incorrect function type 'void (*)(void *)'
     //
     // So let's do the cast ourselves, to void* here and back in InitCb().

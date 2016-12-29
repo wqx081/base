@@ -41,9 +41,9 @@ void ThreadRestrictions::AssertIOAllowed() {
     << "Function marked as IO-only was called from a thread that "
     << "disallows IO!  If this thread really should be allowed to "
     << "make IO calls, adjust the call to "
-    << "kudu::ThreadRestrictions::SetIOAllowed() in this thread's "
+    << "base::ThreadRestrictions::SetIOAllowed() in this thread's "
     << "startup. "
-    << (Thread::current_thread() ? Thread::current_thread()->ToString() : "(not a kudu::Thread)");
+    << (Thread::current_thread() ? Thread::current_thread()->ToString() : "(not a base::Thread)");
 }
 
 bool ThreadRestrictions::SetWaitAllowed(bool allowed) {
@@ -56,8 +56,8 @@ void ThreadRestrictions::AssertWaitAllowed() {
   CHECK(LoadTLS()->wait_allowed)
     << "Waiting is not allowed to be used on this thread to prevent "
     << "server-wide latency aberrations and deadlocks. "
-    << (Thread::current_thread() ? Thread::current_thread()->ToString() : "(not a kudu::Thread)");
+    << (Thread::current_thread() ? Thread::current_thread()->ToString() : "(not a base::Thread)");
 }
 
-} // namespace kudu
+} // namespace base
 #endif

@@ -182,5 +182,5 @@ class rw_semaphore {
 #endif // NDEBUG
 };
 
-} // namespace kudu
+} // namespace base
 #endif /* BASE_RW_SEMAPHORE_H */

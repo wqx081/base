@@ -280,5 +280,4 @@ void Thread::FinishThread(void* arg) {
           << t->category() << ":" << t->name();
 }         
 
-
 } // namespace base

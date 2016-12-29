@@ -5,6 +5,12 @@ CXXFLAGS += -std=c++11 -Wall -Werror -Wno-sign-compare -Wno-deprecated -g -c -o
 CXX=g++
 
 CPP_SOURCES :=  \
+	user.cc \
+	mem_tracker.cc \
+	histogram.pb.cc \
+	hdr_histogram.cc \
+	metrics.cc \
+	striped64.cc \
 	atomic.cc \
 	base64.cc	\
 	condition_variable.cc \

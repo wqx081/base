@@ -78,15 +78,7 @@ ThreadPool::ThreadPool(const ThreadPoolBuilder& builder)
         active_threads_(0),
         queue_size_(0) {
   // TODO(wqx):
-  // string prefix = !builder.trace_metric_prefix_.empty() ?
-  // builder.trace_metric_prefix_ : builder.name_;
-  // queue_time_trace_metric_name_ = TraceMetrics::InternName(
-  // prefix + ".queue_time_us");
-  // run_wall_time_trace_metric_name_ = TraceMetrics::InternName(
-  // prefix + ".run_wall_time_us");
-  // run_cpu_time_trace_metric_name_ = TraceMetrics::InternName(
-  // prefix + ".run_cpu_time_us");
-  
+  // metrics 
 }
 
 ThreadPool::~ThreadPool() {
@@ -127,13 +119,7 @@ void ThreadPool::Shutdown() {
   unique_lock.Unlock();
 
   //TODO(wqx):
-#if 0
-  for (QueueEntry& e : to_release) {
-    if (e.trace) { 
-      e.trace->Release();
-    } 
-  } 
-#endif
+  // Cleanup trace
 } 
 
 Status ThreadPool::SubmitClosure(const core::Closure& task) {
@@ -175,12 +161,6 @@ Status ThreadPool::Submit(const std::shared_ptr<Runnable>& task) {
   
   QueueEntry e;
   e.runnable = task;
-#if 0
-  e.trace = Trace::CurrentTrace();
-  if (e.trace) {
-    e.trace->AddRef();
-  } 
-#endif
   e.submit_time = submit_time;
   
   queue_.push_back(e);
@@ -191,12 +171,6 @@ Status ThreadPool::Submit(const std::shared_ptr<Runnable>& task) {
   guard.Unlock();
   not_empty_.Signal();
   
-#if 0
-  if (queue_length_histogram_) {
-    queue_length_histogram_->Increment(length_at_submit);
-  }
-#endif
-
   return Status::OK();
 }
 

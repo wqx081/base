@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BASE_NET_SSL_FACTORY_H_
+#define BASE_NET_SSL_FACTORY_H_
 
 #include <string>
 #include <memory>
@@ -48,3 +49,5 @@ class SSLFactory {
 };
 
 } // namespace base
+
+#endif // BASE_NET_SSL_FACTORY_H_

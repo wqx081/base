@@ -10,7 +10,7 @@
 
 namespace base {
 
-// See top-level comments in kudu/gutil/atomicops.h for further
+// See top-level comments in base/core/atomicops.h for further
 // explanations of these levels.
 enum MemoryOrder {
   // Relaxed memory ordering, doesn't use any barriers.
@@ -39,7 +39,7 @@ enum MemoryOrder {
 // IncrementBy is undefined behavior (it is also undefined for signed types,
 // as always).
 //
-// See also: kudu/gutil/atomicops.h
+// See also: base/core/atomicops.h
 template<typename T>
 class AtomicInt {
  public:

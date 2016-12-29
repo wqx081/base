@@ -9,7 +9,7 @@ all:
 	make -C ${SRC_PREFIX}/util
 	make -C ${SRC_PREFIX}/net
 	make -C ${SRC_PREFIX}/http
-#	make -C ${SRC_PREFIX}/rpc
+	make -C ${SRC_PREFIX}/rpc
 #	make -C ${SRC_PREFIX}/common
 #	make -C ${SRC_PREFIX}/server
 #	make -C ${SRC_PREFIX}/master
@@ -23,7 +23,7 @@ clean:
 	make -C ${SRC_PREFIX}/util clean
 	make -C ${SRC_PREFIX}/net clean
 	make -C ${SRC_PREFIX}/http clean
-#	make -C ${SRC_PREFIX}/rpc clean
+	make -C ${SRC_PREFIX}/rpc clean
 #	make -C ${SRC_PREFIX}/common clean
 #	make -C ${SRC_PREFIX}/server clean
 #	make -C ${SRC_PREFIX}/master clean
