@@ -8,7 +8,6 @@ CFLAGS +=  -std=c99 -O2 -W -Wall -pedantic -pthread -pipe -c -o
 CC=gcc
 
 CPP_SOURCES := \
-	url_coding.cc \
 	webserver_options.cc \
 	webserver.cc \
 

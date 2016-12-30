@@ -45,9 +45,7 @@ RpcContext::RpcContext(InboundCall *call,
     result_tracker_(result_tracker) {
   VLOG(4) << call_->remote_method().service_name() << ": Received RPC request for "
           << call_->ToString() << ":" << std::endl << SecureDebugString(*request_pb_);
-  TRACE_EVENT_ASYNC_BEGIN2("rpc_call", "RPC", this,
-                           "call", call_->ToString(),
-                           "request", pb_util::PbTracer::TracePb(*request_pb_));
+//  TRACE_EVENT_ASYNC_BEGIN2("rpc_call", "RPC", this, "call", call_->ToString(), "request", pb_util::PbTracer::TracePb(*request_pb_));
 }
 
 RpcContext::~RpcContext() {
@@ -60,9 +58,7 @@ void RpcContext::RespondSuccess() {
   } else {
     VLOG(4) << call_->remote_method().service_name() << ": Sending RPC success response for "
         << call_->ToString() << ":" << std::endl << SecureDebugString(*response_pb_);
-    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this,
-                           "response", pb_util::PbTracer::TracePb(*response_pb_),
-                           "trace", trace()->DumpToString());
+//    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this, "response", pb_util::PbTracer::TracePb(*response_pb_), "trace", trace()->DumpToString());
     call_->RespondSuccess(*response_pb_);
     delete this;
   }
@@ -75,9 +71,7 @@ void RpcContext::RespondNoCache() {
   } else {
     VLOG(4) << call_->remote_method().service_name() << ": Sending RPC failure response for "
         << call_->ToString() << ": " << SecureDebugString(*response_pb_);
-    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this,
-                           "response", pb_util::PbTracer::TracePb(*response_pb_),
-                           "trace", trace()->DumpToString());
+//    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this, "response", pb_util::PbTracer::TracePb(*response_pb_), "trace", trace()->DumpToString());
     // This is a bit counter intuitive, but when we get the failure but set the error on the
     // call's response we call RespondSuccess() instead of RespondFailure().
     call_->RespondSuccess(*response_pb_);
@@ -92,9 +86,7 @@ void RpcContext::RespondFailure(const Status &status) {
   } else {
     VLOG(4) << call_->remote_method().service_name() << ": Sending RPC failure response for "
         << call_->ToString() << ": " << status.ToString();
-    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this,
-                           "status", status.ToString(),
-                           "trace", trace()->DumpToString());
+//    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this, "status", status.ToString(), "trace", trace()->DumpToString());
     call_->RespondFailure(ErrorStatusPB::ERROR_APPLICATION, status);
     delete this;
   }
@@ -107,9 +99,7 @@ void RpcContext::RespondRpcFailure(ErrorStatusPB_RpcErrorCodePB err, const Statu
   } else {
     VLOG(4) << call_->remote_method().service_name() << ": Sending RPC failure response for "
         << call_->ToString() << ": " << status.ToString();
-    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this,
-                           "status", status.ToString(),
-                           "trace", trace()->DumpToString());
+//    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this, "status", status.ToString(), "trace", trace()->DumpToString());
     call_->RespondFailure(err, status);
     delete this;
   }
@@ -128,9 +118,7 @@ void RpcContext::RespondApplicationError(int error_ext_id, const std::string& me
           << ": Sending application error response for " << call_->ToString()
           << ":" << std::endl << SecureDebugString(err);
     }
-    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this,
-                           "response", pb_util::PbTracer::TracePb(app_error_pb),
-                           "trace", trace()->DumpToString());
+//    TRACE_EVENT_ASYNC_END2("rpc_call", "RPC", this, "response", pb_util::PbTracer::TracePb(app_error_pb), "trace", trace()->DumpToString());
     call_->RespondApplicationError(error_ext_id, message, app_error_pb);
     delete this;
   }

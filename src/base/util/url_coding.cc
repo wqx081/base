@@ -1,4 +1,4 @@
-#include "base/http/url_coding.h"
+#include "base/util/url_coding.h"
 
 #include <algorithm>
 #include <exception>
@@ -20,11 +20,11 @@ namespace base {
 // characters it will encode.
 // See common/src/java/org/apache/hadoop/hive/common/FileUtils.java
 // in the Hive source code for the source of this list.
-static boost::function<bool (char)> HiveShouldEscape = boost::is_any_of("\"#%\\*/:=?\u00FF"); // NOLINT(*)
+static std::function<bool (char)> HiveShouldEscape = boost::is_any_of("\"#%\\*/:=?\u00FF"); // NOLINT(*)
 
 // It is more convenient to maintain the complement of the set of
 // characters to escape when not in Hive-compat mode.
-static boost::function<bool (char)> ShouldNotEscape = boost::is_any_of("-_.~"); // NOLINT(*)
+static std::function<bool (char)> ShouldNotEscape = boost::is_any_of("-_.~"); // NOLINT(*)
 
 static inline void UrlEncode(const char* in, int in_len, string* out, bool hive_compat) {
   (*out).reserve(in_len);

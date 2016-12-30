@@ -48,6 +48,9 @@ Mutex::Mutex()
     : impl_(new Impl()) {
 }
 
+Mutex::~Mutex() {
+}
+
 void Mutex::Acquire() {
   impl_->Acquire();
 }

@@ -1,19 +1,3 @@
-// Licensed to the Apache Software Foundation (ASF) under one
-// or more contributor license agreements.  See the NOTICE file
-// distributed with this work for additional information
-// regarding copyright ownership.  The ASF licenses this file
-// to you under the Apache License, Version 2.0 (the
-// "License"); you may not use this file except in compliance
-// with the License.  You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
-// specific language governing permissions and limitations
-// under the License.
 #ifndef BASE_RPC_REACTOR_H
 #define BASE_RPC_REACTOR_H
 
@@ -86,7 +70,7 @@ class ReactorTask : public boost::intrusive::list_base_hook<> {
 //    receives a Status as its first argument.
 class DelayedTask : public ReactorTask {
  public:
-  DelayedTask(boost::function<void(const Status &)> func, MonoDelta when);
+  DelayedTask(std::function<void(const Status &)> func, MonoDelta when);
 
   // Schedules the task for running later but doesn't actually run it yet.
   virtual void Run(ReactorThread* reactor) OVERRIDE;
@@ -99,7 +83,7 @@ class DelayedTask : public ReactorTask {
   void TimerHandler(ev::timer& watcher, int revents);
 
   // User function to invoke when timer fires or when task is aborted.
-  const boost::function<void(const Status&)> func_;
+  const std::function<void(const Status&)> func_;
 
   // Delay to apply to this task.
   const MonoDelta when_;
@@ -300,7 +284,7 @@ class Reactor {
   // deleting itself after running if it is allocated on the heap.
   void ScheduleReactorTask(ReactorTask *task);
 
-  Status RunOnReactorThread(const boost::function<Status()>& f);
+  Status RunOnReactorThread(const std::function<Status()>& f);
 
   // If the Reactor is closing, returns false.
   // Otherwise, drains the pending_tasks_ queue into the provided list.
@@ -345,5 +329,4 @@ class Reactor {
 
 } // namespace rpc
 } // namespace base
-
 #endif

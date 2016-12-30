@@ -167,7 +167,7 @@ class RefCountedData
   ~RefCountedData() {}
 };
 
-}  // namespace kudu
+}  // namespace base
 
 //
 // A smart pointer class for reference counted objects.  Use this class instead

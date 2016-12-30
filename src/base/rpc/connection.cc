@@ -397,7 +397,7 @@ void Connection::QueueResponseForCall(gscoped_ptr<InboundCall> call) {
 
   // If the connection is torn down, then the QueueOutbound() call that
   // eventually runs in the reactor thread will take care of calling
-  // ResponseTransferCallbacks::NotifyTransferAborted.
+  // ResponseTransferCallbacks::OnTransferAborted.
 
   std::vector<Slice> slices;
   call->SerializeResponseTo(&slices);

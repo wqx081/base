@@ -17,7 +17,9 @@
 #include "base/util/random.h"
 //#include "base/util/spinlock_profiling.h"
 
-DECLARE_bool(log_redact_user_data);
+DEFINE_bool(log_redact_user_data, true,
+  "Whether log and error messages will have row data redacted.");
+
 DECLARE_bool(never_fsync);
 
 DEFINE_string(test_leave_files, "on_failure",

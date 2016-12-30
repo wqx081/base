@@ -27,7 +27,7 @@
 #include "base/util/env.h"
 #include "base/util/locks.h"
 #include "base/net/net_util.h"
-#include "base/http/url_coding.h"
+#include "base/util/url_coding.h"
 
 using std::make_pair;
 using std::ostringstream;

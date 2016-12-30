@@ -854,11 +854,11 @@ bool SplitRange(const char* rangestr, int* from, int* to);
 // The following variants of SplitCSVLine() are not recommended for new code.
 // Please consider the CSV parser in //util/csv as an alternative.  Examples:
 // To parse a single line:
-//     #include "kudu/util/csv/parser.h"
+//     #include "base/util/csv/parser.h"
 //     vector<string> fields = util::csv::ParseLine(line).fields();
 //
 // To parse an entire file:
-//     #include "kudu/util/csv/parser.h"
+//     #include "base/util/csv/parser.h"
 //     for (Record rec : Parser(source)) {
 //       vector<string> fields = rec.fields();
 //     }

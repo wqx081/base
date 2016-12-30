@@ -5,7 +5,20 @@ CXXFLAGS += -std=c++11 -Wall -Werror -Wno-sign-compare -Wno-deprecated -g -c -o
 CXX=g++
 
 CPP_SOURCES :=  \
+	memory/arena.cc \
+	memory/memory.cc \
+	memory/overwrite.cc \
+	url_coding.cc \
+	os_util.cc \
+	string_case.cc \
+	trace.cc \
+	trace_metrics.cc \
+	pb_util.pb.cc \
 	user.cc \
+	coding.cc \
+	crc32c.cc \
+	pb_util-internal.cc \
+	pb_util.cc \
 	mem_tracker.cc \
 	histogram.pb.cc \
 	hdr_histogram.cc \
@@ -16,6 +29,7 @@ CPP_SOURCES :=  \
 	condition_variable.cc \
 	errno.cc \
 	env.cc \
+	env_util.cc \
 	env_posix.cc \
 	faststring.cc \
 	path_util.cc \

@@ -34,4 +34,4 @@ CallbackBase::~CallbackBase() {
 }
 
 }  // namespace internal
-}  // namespace kudu
+}  // namespace base

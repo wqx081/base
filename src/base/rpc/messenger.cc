@@ -300,7 +300,7 @@ Status Messenger::DumpRunningRpcs(const DumpRunningRpcsRequestPB& req,
   return Status::OK();
 }
 
-void Messenger::ScheduleOnReactor(const boost::function<void(const Status&)>& func,
+void Messenger::ScheduleOnReactor(const std::function<void(const Status&)>& func,
                                   MonoDelta when) {
   DCHECK(!reactors_.empty());
 

@@ -10,7 +10,9 @@
 #include "base/rpc/rpcz_store.h"
 #include "base/rpc/serialization.h"
 #include "base/rpc/service_if.h"
+//#include "base/util/debug/trace_event.h"
 #include "base/util/metrics.h"
+#include "base/util/trace.h"
 
 using google::protobuf::FieldDescriptor;
 using google::protobuf::io::CodedOutputStream;
@@ -26,7 +28,7 @@ namespace rpc {
 InboundCall::InboundCall(Connection* conn)
   : conn_(conn),
     sidecars_deleter_(&sidecars_),
-    // trace_(new Trace),
+    trace_(new Trace),
     method_info_(nullptr) {
   RecordCallReceived();
 }
@@ -35,7 +37,7 @@ InboundCall::~InboundCall() {}
 
 Status InboundCall::ParseFrom(gscoped_ptr<InboundTransfer> transfer) {
   //TRACE_EVENT_FLOW_BEGIN0("rpc", "InboundCall", this);
-  //TRACE_EVENT0("rpc", "InboundCall::ParseFrom");
+  // TRACE_EVENT0("rpc", "InboundCall::ParseFrom");
   RETURN_NOT_OK(serialization::ParseMessage(transfer->data(), &header_, &serialized_request_));
 
   // Adopt the service/method info from the header as soon as it's available.
@@ -107,7 +109,7 @@ void InboundCall::Respond(const MessageLite& response,
   SerializeResponseBuffer(response, is_success);
 
   //TRACE_EVENT_ASYNC_END1("rpc", "InboundCall", this, "method", remote_method_.method_name());
-  //TRACE_TO(trace_, "Queueing $0 response", is_success ? "success" : "failure");
+  TRACE_TO(trace_, "Queueing $0 response", is_success ? "success" : "failure");
   RecordHandlingCompleted();
   conn_->rpcz_store()->AddCall(this);
   conn_->QueueResponseForCall(gscoped_ptr<InboundCall>(this));
@@ -186,11 +188,9 @@ string InboundCall::ToString() const {
 void InboundCall::DumpPB(const DumpRunningRpcsRequestPB& req,
                          RpcCallInProgressPB* resp) {
   resp->mutable_header()->CopyFrom(header_);
-#if 0
   if (req.include_traces() && trace_) {
     resp->set_trace_buffer(trace_->DumpToString());
   }
-#endif
   resp->set_micros_elapsed((MonoTime::Now() - timing_.time_received)
                            .ToMicroseconds());
 }
@@ -207,11 +207,9 @@ const scoped_refptr<Connection>& InboundCall::connection() const {
   return conn_;
 }
 
-#if  0
 Trace* InboundCall::trace() {
   return trace_.get();
 }
-#endif
 
 void InboundCall::RecordCallReceived() {
   //TRACE_EVENT_ASYNC_BEGIN0("rpc", "InboundCall", this);

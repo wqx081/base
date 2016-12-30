@@ -15,7 +15,7 @@ all:
 #	make -C ${SRC_PREFIX}/master
 #	make -C ${SRC_PREFIX}/worker_server
 #	make -C ${SRC_PREFIX}/tests/master
-#	make -C ${SRC_PREFIX}/tests/rpc
+	make -C ${SRC_PREFIX}/tests/rpc
 #	make -C ${SRC_PREFIX}/tests/util
 
 clean:
@@ -28,6 +28,6 @@ clean:
 #	make -C ${SRC_PREFIX}/server clean
 #	make -C ${SRC_PREFIX}/master clean
 #	make -C ${SRC_PREFIX}/worker_server clean
-#	make -C ${SRC_PREFIX}/tests/rpc clean
+	make -C ${SRC_PREFIX}/tests/rpc clean
 #	make -C ${SRC_PREFIX}/tests/util clean
 

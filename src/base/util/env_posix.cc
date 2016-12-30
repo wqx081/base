@@ -908,7 +908,7 @@ class PosixEnv : public Env {
       dir = env;
     } else {
       char buf[100];
-      snprintf(buf, sizeof(buf), "/tmp/kudutest-%d", static_cast<int>(geteuid()));
+      snprintf(buf, sizeof(buf), "/tmp/mprtest-%d", static_cast<int>(geteuid()));
       dir = buf;
     }
     // Directory may already exist

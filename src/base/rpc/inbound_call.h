@@ -27,7 +27,7 @@ class Message;
 namespace base {
 
 class Histogram;
-//class Trace;
+class Trace;
 
 namespace rpc {
 
@@ -120,7 +120,7 @@ class InboundCall {
 
   const scoped_refptr<Connection>& connection() const;
 
-  //Trace* trace();
+  Trace* trace();
 
   const InboundCallTiming& timing() const {
     return timing_;
@@ -215,7 +215,7 @@ class InboundCall {
   ElementDeleter sidecars_deleter_;
 
   // The trace buffer.
-  // scoped_refptr<Trace> trace_;
+  scoped_refptr<Trace> trace_;
 
   // Timing information related to this RPC call.
   InboundCallTiming timing_;

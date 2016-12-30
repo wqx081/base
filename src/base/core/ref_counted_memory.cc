@@ -92,4 +92,4 @@ RefCountedMallocedMemory::~RefCountedMallocedMemory() {
   free(data_);
 }
 
-}  //  namespace kudu
+}  //  namespace base

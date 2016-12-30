@@ -11,6 +11,7 @@
 #include "base/core/endian.h"
 #include "base/core/strings/substitute.h"
 #include "base/rpc/constants.h"
+#include "base/rpc/messenger.h"
 #include "base/net/sockaddr.h"
 #include "base/net/socket.h"
 
@@ -220,8 +221,7 @@ bool OutboundTransfer::TransferFinished() const {
 }
 
 string OutboundTransfer::HexDump() const {
-//TODO(wqx):
-#if 0
+#if 0 //TODO:(wqx)
   if (KUDU_SHOULD_REDACT()) {
     return kRedactionMessage;
   }

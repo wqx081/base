@@ -46,7 +46,7 @@ PROTO_OBJ := $(PROTO_SRC:.proto=.pb.o)
 PROTO_GEN := $(PROTO_SRC:.proto=.pb.cc) $(PROTO_SRC:.proto=.pb.h)
 
 
-all: $(CPP_OBJECTS) $(LIBS)
+all: $(CPP_OBJECTS) protoc-gen-krpc $(LIBS)
 
 $(STATIC_LIB): $(CPP_OBJECTS)
 	@echo "  [LINK] $@"
@@ -62,6 +62,17 @@ $(STATIC_LIB): $(CPP_OBJECTS)
 %.pb.cc: %.proto
 	@echo "  [GEN]  $@"
 	@protoc  --cpp_out $(SRC_DIR) --proto_path $(SRC_DIR) --proto_path /usr/local/include $(CURDIR)/$<
+
+protoc-gen-krpc: protoc-gen-krpc.o
+	@echo "  [LINK] $@"
+	@$(CXX) -o $@ protoc-gen-krpc.o rpc_header.pb.o $(SRC_DIR)/base/core/libcore.a \
+	$(SRC_DIR)/base/util/libutil.a \
+	-lglog -lgflags -L/usr/local/lib -lprotobuf -lprotoc -lpthread
+
+protoc-gen-krpc.o: protoc-gen-krpc.cc
+	@echo "  [CXX]  $@"
+	@$(CXX) $(CXXFLAGS) $@ $<
+
 
 clean:
 	@rm -fr $(CPP_OBJECTS)

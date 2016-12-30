@@ -435,7 +435,7 @@ void ReactorThread::DestroyConnection(Connection *conn,
   }
 }
 
-DelayedTask::DelayedTask(boost::function<void(const Status &)> func,
+DelayedTask::DelayedTask(std::function<void(const Status &)> func,
                          MonoDelta when)
     : func_(std::move(func)), when_(std::move(when)), thread_(nullptr) {}
 
@@ -521,7 +521,7 @@ bool Reactor::closing() const {
 // Task to call an arbitrary function within the reactor thread.
 class RunFunctionTask : public ReactorTask {
  public:
-  explicit RunFunctionTask(boost::function<Status()> f)
+  explicit RunFunctionTask(std::function<Status()> f)
       : function_(std::move(f)), latch_(1) {}
 
   virtual void Run(ReactorThread *reactor) OVERRIDE {
@@ -541,7 +541,7 @@ class RunFunctionTask : public ReactorTask {
   }
 
  private:
-  boost::function<Status()> function_;
+  std::function<Status()> function_;
   Status status_;
   CountDownLatch latch_;
 };
@@ -550,7 +550,7 @@ Status Reactor::GetMetrics(ReactorMetrics *metrics) {
   return RunOnReactorThread(std::bind(&ReactorThread::GetMetrics, &thread_, metrics));
 }
 
-Status Reactor::RunOnReactorThread(const boost::function<Status()>& f) {
+Status Reactor::RunOnReactorThread(const std::function<Status()>& f) {
   RunFunctionTask task(f);
   ScheduleReactorTask(&task);
   return task.Wait();

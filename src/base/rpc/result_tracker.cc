@@ -8,6 +8,7 @@
 #include "base/rpc/inbound_call.h"
 #include "base/rpc/rpc_context.h"
 #include "base/util/mem_tracker.h"
+#include "base/util/pb_util.h"
 
 DEFINE_int64(remember_clients_ttl_ms, 3600 * 1000 /* 1 hour */,
     "Maximum amount of time, in milliseconds, the server \"remembers\" a client for the "

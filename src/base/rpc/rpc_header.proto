@@ -1,10 +1,7 @@
 package base.rpc;
 
 import "google/protobuf/descriptor.proto";
-
-extend google.protobuf.FieldOptions {
-  optional bool REDACT = 50001 [default=false];
-}
+import "base/util/pb_util.proto";
 
 message UserInformationPB {
   optional string effective_user = 1;
