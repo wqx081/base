@@ -67,6 +67,8 @@ $(STATIC_LIB): $(CPP_OBJECTS)
 	@echo "  [LINK] $@"
 	@ar rs $@ $(CPP_OBJECTS)
 
+.PRECIOUS:  histogram.pb.cc pb_util.pb.cc
+
 .cc.o:
 	@echo "  [CXX]  $@"
 	@$(CXX) $(CXXFLAGS) $@ $<

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BASE_RPC_RPCZ_STORE_H_
+#define BASE_RPC_RPCZ_STORE_H_
 
 #include "base/core/macros.h"
 
@@ -56,3 +57,4 @@ class RpczStore {
 
 } // namespace rpc
 } // namespace base
+#endif // BASE_RPC_RPCZ_STORE_H_

@@ -368,7 +368,7 @@ inline uint8_t *ArenaBase<true>::Component::AllocateBytesAligned(
   retry:
   Atomic32 offset = Acquire_Load(&offset_);
 
-  Atomic32 aligned = KUDU_ALIGN_UP(offset, alignment);
+  Atomic32 aligned = MPR_ALIGN_UP(offset, alignment);
   Atomic32 new_offset = aligned + size;
 
   if (PREDICT_TRUE(new_offset <= size_)) {
@@ -392,7 +392,7 @@ inline uint8_t *ArenaBase<false>::Component::AllocateBytesAligned(
   DCHECK(alignment == 1 || alignment == 2 || alignment == 4 ||
          alignment == 8 || alignment == 16)
     << "bad alignment: " << alignment;
-  size_t aligned = KUDU_ALIGN_UP(offset_, alignment);
+  size_t aligned = MPR_ALIGN_UP(offset_, alignment);
   uint8_t* destination = data_ + aligned;
   size_t save_offset = offset_;
   offset_ = aligned + size;

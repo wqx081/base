@@ -27,7 +27,7 @@ tests := rpc_unittest \
 
 all: $(CPP_OBJECTS) $(tests)
 
-.PRECIOUS: *.pb.cc *.pb.h
+.PRECIOUS: $(CPP_SOURCES)
 
 .cc.o:
 	@$(CXX) $(CXXFLAGS) $@ $<

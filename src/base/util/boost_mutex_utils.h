@@ -1,5 +1,5 @@
-#ifndef KUDU_BOOST_MUTEX_UTILS_H
-#define KUDU_BOOST_MUTEX_UTILS_H
+#ifndef BASE_BOOST_MUTEX_UTILS_H
+#define BASE_BOOST_MUTEX_UTILS_H
 
 
 // Similar to std::lock_guard except that it takes
@@ -26,4 +26,4 @@ class lock_guard_maybe {
   LockType *lock_;
 };
 
-#endif
+#endif // BASE_BOOST_MUTEX_UTILS_H
