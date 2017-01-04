@@ -1,0 +1,15 @@
+package base.echo_service;
+
+import "base/rpc/rpc_header.proto";
+
+message EchoRequestPB {
+  required string message = 1;
+}
+
+message EchoResponsePB {
+  required string message = 1;
+}
+
+service EchoService {
+  rpc Echo(EchoRequestPB) returns (EchoResponsePB);
+}

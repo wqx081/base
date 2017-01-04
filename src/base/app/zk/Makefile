@@ -7,32 +7,30 @@ ANT_LIBS := $(SRC_PREFIX)/rpc/librpc.a $(SRC_PREFIX)/net/libnet.a $(SRC_PREFIX)/
 
 COMMON_LIBS := -lglog -lgflags -levent  -lpthread -lssl -lcrypto -lz -lev -lsasl2 -lpcre \
 	-L/usr/local/lib -lgtest -lgtest_main -lpthread \
-	-lprotobuf -lprotoc
+	-lprotobuf -lprotoc -L/usr/local/lib/ -lleveldb -lsnappy -lpthread
 
 CXX=g++
 
 CPP_SOURCES := \
-	rtest_diff_package.pb.cc \
-	rtest.pb.cc \
-	rtest.service.pb.cc \
-	rtest.proxy.pb.cc \
-	echo.pb.cc \
-	echo.service.pb.cc \
-	echo.proxy.pb.cc \
+	ins_node.pb.cc \
+	ins_node.service.pb.cc \
+	ins_node.proxy.pb.cc \
+	storage/binlog.cc \
+	storage/meta.cc \
+	storage/storage_manage.cc \
+	server/flags.cc \
+	server/user_manage.cc \
 
 CPP_OBJECTS := $(CPP_SOURCES:.cc=.o)
 
-tests := rpc_unittest \
-	reactor_unittest \
-	rpc_stub_unittest \
-	service_queue_unittest \
-	mt_rpc_unittest \
+tests := server_unittest \
 
 all: $(CPP_OBJECTS) $(tests)
 
 .PRECIOUS: $(CPP_SOURCES)
 
 .cc.o:
+	@echo "  [CXX] $@"
 	@$(CXX) $(CXXFLAGS) $@ $<
 
 %.pb.cc: %.proto
@@ -43,27 +41,10 @@ all: $(CPP_OBJECTS) $(tests)
 	protoc  --plugin=$(SRC_PREFIX)/rpc/protoc-gen-krpc --krpc_out $(SRC_DIR)  --proto_path $(SRC_DIR) --proto_path /usr/local/include $(CURDIR)/$<
 
 
-rpc_unittest: rpc_unittest.o
+server_unittest: server_unittest.o
 	@echo "  [LINK]  $@"
 	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
-
-reactor_unittest: reactor_unittest.o
-	@echo "  [LINK]  $@"
-	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
-
-rpc_stub_unittest: rpc_stub_unittest.o
-	@echo "  [LINK]  $@"
-	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
-
-service_queue_unittest: service_queue_unittest.o
-	@echo "  [LINK]  $@"
-	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
-
-mt_rpc_unittest: mt_rpc_unittest.o
-	@echo "  [LINK]  $@"
-	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
-
 
 clean:
 	rm -fr *.o *.pb.h *.pb.cc
-	rm -fr $(tests)
+	rm -fr $(tests) $(CPP_OBJECTS)
