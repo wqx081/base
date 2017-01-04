@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include <string>
-#include "server/user_manage.h"
-#include "proto/ins_node.pb.h"
+
+#include "base/app/zk/server/user_manage.h"
+#include "base/app/zk/ins_node.pb.h"
 
 using namespace galaxy::ins;
 
@@ -168,9 +169,3 @@ TEST(UserManageTest, ToolFunctionTest) {
     EXPECT_TRUE(user_manager.IsValidUser("user2"));
     EXPECT_TRUE(!user_manager.IsValidUser("user3"));
 }
-
-int main(int argc, char *argv[]) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-

@@ -23,7 +23,7 @@ Meta::Meta(const std::string& data_dir) : data_dir_(data_dir),
                                           vote_file_(NULL),
                                           root_file_(NULL) {
     base::Status st = base::Env::Default()->CreateDir(data_dir);
-    DCHECK(st.ok()) << strings::Substitute("Failed to Create dir: $0 "
+    DCHECK(st.ok() || st.IsAlreadyPresent()) << strings::Substitute("Failed to Create dir: $0 "
 		    " error: $1", data_dir, st.ToString());
 
     term_file_ = fopen((data_dir + "/" + term_file_name).c_str(), "a+");

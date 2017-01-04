@@ -20,7 +20,7 @@ BinLogger::BinLogger(const std::string& data_dir,
                                                   length_(0),
                                                   last_log_term_(-1) {
     base::Status st = base::Env::Default()->CreateDir(data_dir);
-    DCHECK(st.ok()) << "Falied to create dir : " << data_dir << " error: "
+    DCHECK(st.ok() || st.IsAlreadyPresent() ) << "Falied to create dir : " << data_dir << " error: "
 	    << st.ToString();
 
     std::string full_name = data_dir + "/" + log_dbname;

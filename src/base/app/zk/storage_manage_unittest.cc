@@ -2,8 +2,9 @@
 #include <string>
 #include <set>
 #include <boost/lexical_cast.hpp>
-#include "storage/storage_manage.h"
-#include "proto/ins_node.pb.h"
+
+#include "base/app/zk/storage/storage_manage.h"
+#include "base/app/zk/ins_node.pb.h"
 
 using namespace galaxy::ins;
 
@@ -111,9 +112,3 @@ TEST(StorageManageTest, IteratorTest) {
     delete it;
     storage_manager.CloseDatabase("user1");
 }
-
-int main(int argc, char *argv[]) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-

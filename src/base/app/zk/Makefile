@@ -24,6 +24,9 @@ CPP_SOURCES := \
 CPP_OBJECTS := $(CPP_SOURCES:.cc=.o)
 
 tests := server_unittest \
+	binlog_unittest \
+	storage_manage_unittest \
+	user_manage_unittest \
 
 all: $(CPP_OBJECTS) $(tests)
 
@@ -42,6 +45,18 @@ all: $(CPP_OBJECTS) $(tests)
 
 
 server_unittest: server_unittest.o
+	@echo "  [LINK]  $@"
+	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
+
+binlog_unittest: binlog_unittest.o
+	@echo "  [LINK]  $@"
+	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
+
+storage_manage_unittest: storage_manage_unittest.o
+	@echo "  [LINK]  $@"
+	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
+
+user_manage_unittest: user_manage_unittest.o
 	@echo "  [LINK]  $@"
 	@$(CXX) -o $@ $< $(CPP_OBJECTS) $(ANT_LIBS) $(COMMON_LIBS)
 

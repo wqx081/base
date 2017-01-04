@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
-#include <boost/bind.hpp>
 #include <string>
 #include <stdlib.h>
-#include "binlog.h"
+#include "base/app/zk/storage/binlog.h"
 
 using namespace galaxy::ins;
 
@@ -84,8 +83,9 @@ TEST(BinLogTest, SlotTruncate) {
     EXPECT_EQ(bin_logger.GetLength(), 0);
 }
 
+#if 0
 int main(int argc, char* argv[]) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
+#endif

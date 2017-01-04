@@ -18,7 +18,7 @@ const std::string StorageManager::anonymous_user = "";
 
 StorageManager::StorageManager(const std::string& data_dir) : data_dir_(data_dir) {
     base::Status st = base::Env::Default()->CreateDir(data_dir);
-    DCHECK(st.ok()) << "Failed to create dir: " << data_dir;
+    DCHECK(st.ok() || st.IsAlreadyPresent()) << "Failed to create dir: " << data_dir;
 
     // Create default database for shared namespace, i.e. anonymous user
     std::string full_name = data_dir + "/@db";

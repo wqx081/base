@@ -32,7 +32,7 @@ std::string UserManager::CalcUuid(const std::string& name) {
 UserManager::UserManager(const std::string& data_dir,
                          const UserInfo& root) : data_dir_(data_dir) {
     base::Status st = base::Env::Default()->CreateDir(data_dir);
-    DCHECK(st.ok()) << "Failed to create dir: " << data_dir;
+    DCHECK(st.ok() || st.IsAlreadyPresent()) << "Failed to create dir: " << data_dir;
 
     std::string full_name = data_dir + "/" + user_dbname;
     leveldb::Options options;
