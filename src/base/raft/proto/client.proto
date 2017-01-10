@@ -1,0 +1,259 @@
+package base.raft.client;
+
+enum OpCode {
+    STATE_MACHINE_QUERY = 1;
+    STATE_MACHINE_COMMAND = 2;
+    VERIFY_RECIPIENT = 3;
+    GET_CONFIGURATION = 4;
+    SET_CONFIGURATION = 5;
+    GET_SERVER_STATS = 6;
+    GET_SERVER_INFO = 7;
+};
+
+message Error {
+    enum Code {
+        UNKNOWN = 0;
+        NOT_LEADER = 1;
+    };
+    optional Code error_code = 1;
+    optional string leader_hint = 2;
+}
+
+message ExactlyOnceRPCInfo {
+    required uint64 client_id = 1;
+    required uint64 first_outstanding_rpc = 2;
+    required uint64 rpc_number = 3;
+}
+
+message VerifyRecipientRequestPB {
+  optional string cluster_uuid = 1;
+  optional uint64 server_id = 2;
+}
+
+message VerifyRecipientResponsePB {
+  optional string cluster_uuid = 1;
+  optional uint64 server_id = 2;
+  optional bool ok = 3;
+  optional string error = 4;
+}
+
+message OpenSessionRequestPB {
+}
+
+message OpenSessionResponsePB {
+  required uint64 client_id = 1;
+}
+
+message CloseSessionRequestPB {
+  required uint64 client_id = 1;
+}
+
+message CloseSessionResponsePB {
+}
+
+message ServerPB {
+  required uint64 server_id = 1;
+  required string addresses = 2;
+}
+
+message GetConfigurationRequestPB {
+}
+message GetConfigurationResponsePB {
+  required uint64 id = 1;
+  repeated ServerPB servers = 2;
+}
+
+message SetConfigurationRequestPB {
+  required uint64 old_id = 1;
+  repeated ServerPB new_servers = 2;
+}
+
+message SetConfigurationResponsePB {
+  message OK {
+  }
+  message ConfigurationChanged {
+    optional string error = 1;
+  }
+  message ConfigurationBad {
+    repeated ServerPB bad_servers = 1;
+  }
+  optional OK ok = 1;
+  optional ConfigurationChanged configuration_changed = 2;
+  optional ConfigurationBad configuration_bad = 3;
+}
+
+enum Status {
+    UNKNOWN = 10;
+
+    OK = 0;
+    INVALID_ARGUMENT = 1;
+    LOOKUP_ERROR = 2;
+    TYPE_ERROR = 3;
+    CONDITION_NOT_MET = 4;
+    TIMEOUT = 5;
+    SESSION_EXPIRED = 6;
+};
+
+message TreeCondition {
+    required string path = 1;
+    required bytes contents = 2;
+};
+
+/**
+ * Read-only Tree state machine query: retrieves information from the
+ * hierarchical key-value store.
+ */
+message ReadOnlyTree {
+    message Request {
+        optional TreeCondition condition = 11;
+        // The following are mutually exclusive.
+        message ListDirectory {
+            required string path = 1;
+        }
+        optional ListDirectory list_directory = 2;
+        message Read {
+            required string path = 1;
+        }
+        optional Read read = 5;
+    }
+    message Response {
+        optional Status status = 1;
+        // The following are mutually exclusive.
+        optional string error = 2;
+        message ListDirectory {
+            repeated string child = 1;
+        }
+        optional ListDirectory list_directory = 3;
+        message Read {
+            required bytes contents = 1;
+        }
+        optional Read read = 4;
+    }
+}
+
+/**
+ * Read-write Tree state machine command: modifies the hierarchical key-value
+ * store and retrieves information from it.
+ */
+message ReadWriteTree {
+    message Request {
+        /// See ExactlyOnceRPCInfo.
+        required ExactlyOnceRPCInfo exactly_once = 10;
+        optional TreeCondition condition = 11;
+        // The following are mutually exclusive.
+        message MakeDirectory {
+            required string path = 1;
+        }
+        optional MakeDirectory make_directory = 1;
+        message RemoveDirectory {
+            required string path = 1;
+        }
+        optional RemoveDirectory remove_directory = 3;
+        message Write {
+            required string path = 1;
+            required bytes contents = 2;
+        }
+        optional Write write = 4;
+        message RemoveFile {
+            required string path = 1;
+        }
+        optional RemoveFile remove_file = 6;
+
+    }
+    message Response {
+        optional Status status = 1;
+        // The following are mutually exclusive.
+        optional string error = 2;
+    }
+}
+
+/**
+ * GetServerInfo RPC: Retrieve basic information from the given server used for
+ * reconfiguration.
+ */
+message GetServerInfo {
+    message Request {
+    }
+    message Response {
+        /**
+         * Server ID, listening addresses.
+         */
+        required Server server_info = 1;
+    }
+}
+
+
+/**
+ * AdvanceStateMachineVersion state machine command: changes state machine
+ * behavior to the given version, if and only if the requested_version is
+ * greater than the state machine's current version. This is currently only
+ * used internally by the Raft servers. It is not currently sent by the client
+ * library, rather it is appended by the Raft leader automatically as needed.
+ */
+message AdvanceStateMachineVersion {
+    message Request {
+        required uint32 requested_version = 1;
+    }
+    message Response {
+        /**
+         * The version of the state machine behavior that the replicated state
+         * machine is running after applying this command (this will be at
+         * least the requested version, but may be higher if the state machine
+         * was already running a higher version).
+         */
+        required uint32 running_version = 1;
+    }
+}
+
+/**
+ * StateMachineCommand RPC from clients that is processed by the replicated
+ * state machine.
+ */
+message StateMachineCommand {
+    /**
+     * This is what the state machine takes in from the replicated log.
+     * These are read-write: they may modify the state machine state.
+     */
+    message Request {
+        // The following are mutually exclusive.
+        optional OpenSession.Request open_session = 1;
+        optional CloseSession.Request close_session = 4;
+        optional ReadWriteTree.Request tree = 2;
+        optional AdvanceStateMachineVersion.Request advance_version = 3;
+    }
+    /**
+     * This is what the state machine outputs for read-write commands from the
+     * log.
+     */
+    message Response {
+        // The following are mutually exclusive.
+        optional OpenSession.Response open_session = 1;
+        optional CloseSession.Response close_session = 4;
+        optional ReadWriteTree.Response tree = 2;
+        optional AdvanceStateMachineVersion.Response advance_version = 3;
+    }
+}
+
+/**
+ * StateMachineQuery RPC from clients that is processed by the replicated state
+ * machine.
+ */
+message StateMachineQuery {
+    /**
+     * These are read-only queries that (in the current implementation) are not
+     * written to the replicated log (but behave as if they were from the
+     * client's perspective). These are read-only: they may not modify the
+     * state machine state.
+     */
+    message Request {
+        // The following are mutually exclusive.
+        optional ReadOnlyTree.Request tree = 1;
+    }
+    /**
+     * This is what the state machine outputs for read-only queries.
+     */
+    message Response {
+        // The following are mutually exclusive.
+        optional ReadOnlyTree.Response tree = 1;
+    }
+}

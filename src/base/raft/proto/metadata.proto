@@ -1,0 +1,6 @@
+package base.raft.metadata;
+
+message MetadataPB {
+  required uint64 current_term = 1;
+  required uint64 voted_for = 2;
+}
