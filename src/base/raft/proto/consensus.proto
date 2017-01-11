@@ -1,0 +1,232 @@
+package base.consensus;
+
+import "base/common/common.proto";
+import "base/common/wire_protocol.proto";
+
+import "base/raft/proto/metadata.proto";
+import "base/raft/proto/opid.proto";
+
+import "base/rpc/rpc_header.proto";
+
+
+message ConsensusErrorPB {
+  enum Code {
+    UNKNOWN = 0;
+    INVALID_TERM = 2;
+    LAST_OPID_TOO_OLD = 3;
+    ALREADY_VOTED = 4;
+    NOT_IN_QUORUM = 5;
+    PRECEDING_ENTRY_DIDNT_MATCH = 6;
+    LEADER_IS_ALIVE = 7;
+    CONSENSUS_BUSY = 8;
+    CANNOT_PREPARE = 9;
+  }
+
+  required Code code = 1;
+  required AppStatusPB status = 2;
+}
+
+enum OperationType {
+  UNKNOWN_OP = 0;
+  NO_OP = 1;
+  WRITE_OP = 3;
+  CHANGE_CONFIG_OP = 4;
+}
+
+enum DriverType {
+  UNKNOWN_DRIVER = 0;
+  LEADER = 1;
+  REPLICA = 2;
+}
+
+message ChangeConfigRecordPB {
+  required bytes tablet_id = 1;
+  required RaftConfigPB old_config = 2;
+  required RaftConfigPB new_config = 3;
+}
+
+enum ChangeConfigType {
+  UNKNOWN_CHANGE = 0;
+  ADD_SERVER = 1;
+  REMOVE_SERVER = 2;
+  CHANGE_ROLE = 3;
+}
+
+message ChangeConfigRequestPB {
+  optional bytes dest_uuid = 4;
+  required bytes tablet_id = 1;
+  optional ChangeConfigType type = 2;
+  optional RaftPeerPB server = 3;
+  optional int64 cas_config_opid_index = 5;
+}
+
+message ChangeConfigResponsePB {
+// TODO
+//  optional tserver.TabletServerErrorPB error = 1;
+  optional RaftPeerPB new_config = 2;
+  optional fixed64 timestamp = 3;
+}
+
+message ReplicateMsg {
+  required OpId id = 1;
+  required fixed64 timestamp = 2;
+  required OperationType op_type = 4;
+// TODO
+//  optional tserver.WriteRequestPB write_request = 5;
+//  optional tserver.AlterSchemaRequestPB alter_schema_request = 6;
+  optional ChangeConfigRecordPB change_config_record = 7;
+
+  optional rpc.RequestIdPB request_id = 8;
+  optional NoOpRequestPB noop_request = 999;
+}
+
+message CommitMsg {
+  required OperationType op_type = 1;
+  optional OpId commited_op_id = 2;
+// TODO
+//  optional tablet.TxResultPB result = 3;
+}
+
+message NoOpRequestPB {
+ optional bytes payload_for_tests = 1;
+}
+
+message ConsensusStatusPB {
+  required OpId last_received = 1;
+  optional OpId last_received_current_leader = 4;
+  optional int64 last_committed_idx = 2;
+  optional ConsensusErrorPB error = 3;
+}
+
+message VoteRequestPB {
+  optional bytes dest_uuid = 6;
+  required string tablet_id = 1;
+  required bytes candidate_uuid = 2;
+  required int64 candidate_term = 3;
+  required ConsensusStatusPB candidate_status = 4;
+  optional bool ignore_live_leader = 5 [ default = false ];
+  optional bool is_pre_election = 7 [ default = false ];
+}
+
+message VoteResponsePB {
+  optional bytes responder_uuid = 1;
+  optional int64 responder_term = 2;
+  optional bool vote_granted = 3;
+  optional ConsensusErrorPB consensus_error = 998;
+// TODO
+//  optional tserver.TabletServerErrorPB error = 999;
+}
+
+message ConsensusRequestPB {
+  optional bytes dest_uuid = 7;
+  required string tablet_id = 1;
+  required bytes caller_uuid = 2;
+  required int64 caller_term = 3;
+  optional OpId preceding_id = 4;
+  optional int64 committed_index = 8;
+  optional OpId DEPRECATED_committed_index = 5;
+  repeated ReplicateMsg ops = 6;
+  optional int64 all_replicated_index = 9;
+  optional fixed64 safe_timestamp = 10;
+}
+
+message ConsensusResponsePB {
+  optional bytes responder_uuid = 1;
+  optional int64 responder_term = 2;
+  optional ConsensusStatusPB status = 3;
+// TODO
+//  optional tserver.TabletServerErrorPB error = 999;
+}
+
+message TransactionStatusPB {
+  required OpId op_id = 1;
+  required OperationType tx_type = 2;
+  required int64 running_for_micros = 3;
+  required string description = 4;
+
+  optional string trace_buffer = 6;
+}
+
+message GetNodeInstanceRequestPB {
+}
+
+message GetNodeInstanceResponsePB {
+  required NodeInstancePB node_instance = 1;
+}
+
+message RunLeaderElectionRequestPB {
+  optional bytes dest_uuid = 2;
+  required bytes tablet_id = 1;
+}
+
+message RunLeaderElectionResponsePB {
+// TODO
+//  optional tserver.TabletServerErrorPB error = 1;
+}
+
+message LeaderStepDownRequestPB {
+  optional bytes dest_uuid = 2;
+  required bytes tablet_id = 1;
+}
+
+message LeaderStepDownResponsePB {
+// TODO
+//  optional tserver.TabletServerErrorPB error = 1;
+}
+
+enum OpIdType {
+  UNKNOWN_OPID_TYPE = 0;
+  RECEIVED_OPID = 1;
+  COMMITTED_OPID = 2;
+}
+
+message GetLastOpIdRequestPB {
+  optional bytes dest_uuid = 2;
+  required bytes tablet_id = 1;
+  optional OpIdType opid_type = 3 [ default = RECEIVED_OPID ];
+}
+
+message GetLastOpIdResponsePB {
+  optional OpId opid = 1;
+// TODO
+//  optional tserver.TabletServerErrorPB error = 2;
+}
+
+message GetConsensusStateRequestPB {
+  optional bytes dest_uuid = 2;
+  required bytes tablet_id = 1;
+  optional ConsensusConfigType type = 3 [ default = CONSENSUS_CONFIG_COMMITTED ];
+}
+
+message GetConsensusStateResponsePB {
+  optional ConsensusStatePB cstate = 1;
+// TODO
+//  optional tserver.TabletServerErrorPB error = 2;
+}
+
+message StartTabletCopyRequestPB {
+  optional bytes dest_uuid = 5;
+  required bytes tablet_id = 1;
+
+  required bytes copy_peer_uuid = 2;
+  required HostPortPB copy_peer_addr = 3;
+
+  optional int64 caller_term = 4 [ default = -1 ];
+}
+
+message StartTabletCopyResponsePB {
+// TODO
+//  optional tserver.TabletServerErrorPB error = 1;
+}
+
+service ConsensusService {
+  rpc UpdateConsensus(ConsensusRequestPB) returns (ConsensusResponsePB);
+  rpc RequestConsensusVote(VoteRequestPB) returns (VoteResponsePB);
+  rpc ChangeConfig(ChangeConfigRequestPB) returns (ChangeConfigResponsePB);
+  rpc GetNodeInstance(GetNodeInstanceRequestPB) returns (GetNodeInstanceResponsePB);
+  rpc RunLeaderElection(RunLeaderElectionRequestPB) returns (RunLeaderElectionResponsePB);
+  rpc LeaderStepDown(LeaderStepDownRequestPB) returns (LeaderStepDownResponsePB);
+  rpc GetLastOpId(GetLastOpIdRequestPB) returns (GetLastOpIdResponsePB);
+  rpc GetConsensusState(GetConsensusStateRequestPB) returns (GetConsensusStateResponsePB);
+  rpc StartTabletCopy(StartTabletCopyRequestPB) returns (StartTabletCopyResponsePB);
+}

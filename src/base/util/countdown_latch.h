@@ -43,7 +43,7 @@ class CountDownLatch {
     }
   }
 
-  bool WaitUtil(const MonoTime& when) const {
+  bool WaitUntil(const MonoTime& when) const {
     return WaitFor(when - MonoTime::Now());
   }
 

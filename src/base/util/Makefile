@@ -5,6 +5,9 @@ CXXFLAGS += -std=c++11 -Wall -Werror -Wno-sign-compare -Wno-deprecated -g -c -o
 CXX=g++
 
 CPP_SOURCES :=  \
+	hexdump.cc \
+	oid_generator.cc \
+	memcmpable_varint.cc \
 	memory/arena.cc \
 	memory/memory.cc \
 	memory/overwrite.cc \

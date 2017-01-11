@@ -33,14 +33,8 @@
 #include "base/net/ssl_factory.h"
 #include "base/net/ssl_socket.h"
 
-// When compiling on Mac OS X, use 'kqueue' instead of the default, 'select', for the event loop.
-// Otherwise we run into problems because 'select' can't handle connections when more than 1024
-// file descriptors are open by the process.
-#if defined(__APPLE__)
-static const int kDefaultLibEvFlags = ev::KQUEUE;
-#else
-static const int kDefaultLibEvFlags = ev::AUTO;
-#endif
+//static const int kDefaultLibEvFlags = ev::AUTO;
+static const int kDefaultLibEvFlags = ev::EPOLL;
 
 using std::string;
 using std::shared_ptr;
@@ -162,7 +156,10 @@ void ReactorThread::WakeThread() {
   // See http://lists.schmorp.de/pipermail/libev/2013q2/002178.html or KUDU-366
   // for examples.
 //  debug::ScopedTSANIgnoreReadsAndWrites ignore_tsan;
+  DVLOG(6) << "Start WakeThread";
+  // 此方法调用不会阻塞
   async_.send();
+  DVLOG(6) << "Finished WakeThread";
 }
 
 // Handle async events.  These events are sent to the reactor by other
@@ -170,6 +167,7 @@ void ReactorThread::WakeThread() {
 // we're shutting down, or the fact that there is a new outbound Transfer
 // ready to send.
 void ReactorThread::AsyncHandler(ev::async &watcher, int revents) {
+  DVLOG(6) << "Start AsyncHandler";
   DCHECK(IsCurrentThread());
 
   if (PREDICT_FALSE(reactor_->closing())) {
@@ -186,6 +184,7 @@ void ReactorThread::AsyncHandler(ev::async &watcher, int revents) {
     tasks.pop_front();
     task.Run(this);
   }
+  DVLOG(6) << "Finished AsyncHandler";
 }
 
 void ReactorThread::RegisterConnection(const scoped_refptr<Connection>& conn) {
@@ -361,6 +360,7 @@ Status ReactorThread::StartConnectionNegotiation(const scoped_refptr<Connection>
   return Status::OK();
 }
 
+// 由 connection.cc 模块调用
 void ReactorThread::CompleteConnectionNegotiation(const scoped_refptr<Connection>& conn,
       const Status &status) {
   DCHECK(IsCurrentThread());
@@ -584,6 +584,7 @@ class RegisterConnectionTask : public ReactorTask {
   scoped_refptr<Connection> conn_;
 };
 
+// 通过socket 创建Connection
 void Reactor::RegisterInboundSocket(Socket *socket, const Sockaddr &remote) {
   VLOG(3) << name_ << ": new inbound connection to " << remote.ToString();
   std::unique_ptr<Socket> new_socket;
@@ -594,6 +595,7 @@ void Reactor::RegisterInboundSocket(Socket *socket, const Sockaddr &remote) {
   }
   scoped_refptr<Connection> conn(
     new Connection(&thread_, remote, new_socket.release(), Connection::SERVER));
+  // task 由其方法 Run() 释放其自身
   auto task = new RegisterConnectionTask(conn);
   ScheduleReactorTask(task);
 }
@@ -626,8 +628,10 @@ void Reactor::QueueOutboundCall(const shared_ptr<OutboundCall> &call) {
   ScheduleReactorTask(task);
 }
 
+// 调度作业, 把作业放置到 pending_tasks_, 然后唤醒线程
 void Reactor::ScheduleReactorTask(ReactorTask *task) {
   {
+    // 加锁
     std::unique_lock<LockType> l(lock_);
     if (closing_) {
       // We guarantee the reactor lock is not taken when calling Abort().
@@ -641,6 +645,7 @@ void Reactor::ScheduleReactorTask(ReactorTask *task) {
 }
 
 bool Reactor::DrainTaskQueue(boost::intrusive::list<ReactorTask> *tasks) { // NOLINT(*)
+  // 加锁                                                                           
   std::lock_guard<LockType> l(lock_);
   if (closing_) {
     return false;

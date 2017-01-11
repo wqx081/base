@@ -1,0 +1,20 @@
+package base.rpct;
+
+import "base/rpc/rpc_header.proto";
+
+message AddRequestPB {
+  required uint32 x = 1;
+  required uint32 y = 2;
+}
+
+message AddRequestPartialPB {
+  required uint32 x = 1;
+}
+
+message AddResponsePB {
+  required uint32 result = 1;
+}
+
+service CalculatorService {
+  rpc Add(AddRequestPB) returns (AddResponsePB);
+}

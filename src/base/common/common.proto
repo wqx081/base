@@ -1,0 +1,15 @@
+package base;
+
+import "base/util/pb_util.proto";
+
+message HostPortPB {
+  required string host = 1;
+  required uint32 port = 2;
+}
+
+enum ExternalConsistencyMode {
+  UNKNOWN_EXTERNAL_CONSISTENCY_MODE = 0;
+
+  CLIENT_PROPAGATED = 1;
+  COMMIT_WAIT = 2;
+}

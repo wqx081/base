@@ -1,0 +1,52 @@
+package base;
+
+import "base/common/common.proto";
+import "base/raft/proto/metadata.proto";
+import "base/util/pb_util.proto";
+
+message AppStatusPB {
+  enum ErrorCode {
+    UNKNOWN_ERROR = 999;
+    OK = 0;
+    NOT_FOUND = 1;
+    CORRUPTION = 2;
+    NOT_SUPPORTED = 3;
+    INVALID_ARGUMENT = 4;
+    IO_ERROR = 5;
+    ALREADY_PRESENT = 6;
+    RUNTIME_ERROR = 7;
+    NETWORK_ERROR = 8;
+    ILLEGAL_STATE = 9;
+    NOT_AUTHORIZED = 10;
+    ABORTED = 11;
+    REMOTE_ERROR = 12;
+    SERVICE_UNAVAILABLE = 13;
+    TIMED_OUT = 14;
+    UNINITIALIZED = 15;
+    CONFIGURATION_ERROR = 16;
+    INCOMPLETE = 17;
+    END_OF_FILE = 18;
+  }
+
+  required ErrorCode code = 1;
+  optional string message = 2;
+  optional int32 posix_code = 4;
+}
+
+message NodeInstancePB {
+  required bytes permanent_uuid = 1;
+  required int64 instance_seqno = 2;
+}
+
+message ServerRegistrationPB {
+  repeated HostPortPB rpc_addresses = 1;
+  repeated HostPortPB http_addresses = 2;
+  optional string software_version = 3;
+}
+
+message ServerEntryPB {
+  optional AppStatusPB error = 1;
+  optional NodeInstancePB instance_id = 2;
+  optional ServerRegistrationPB registration = 3;
+  optional consensus.RaftPeerPB.Role role = 4;
+}

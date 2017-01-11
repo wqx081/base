@@ -1,0 +1,6 @@
+package base.consensus;
+
+message OpId {
+  required int64 term = 1;
+  required int64 index = 2;
+}

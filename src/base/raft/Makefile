@@ -5,7 +5,22 @@ CXXFLAGS += -std=c++11 -Wall -Werror -Wno-sign-compare -Wno-deprecated -g -c -o
 CXX=g++
 
 CPP_SOURCES :=  \
-	proto/raft.pb.cc \
+	proto/maintenance_manager.pb.cc \
+	proto/opid.pb.cc \
+	proto/metadata.pb.cc \
+	proto/consensus.pb.cc \
+	proto/consensus.service.pb.cc \
+	proto/consensus.proxy.pb.cc \
+	\
+	time_manager.cc \
+	resettable_heartbeater.cc \
+	\
+	proto/log.pb.cc \
+	opid_util.cc \
+	log_index.cc \
+	log_metrics.cc \
+	log_util.cc \
+	log_reader.cc \
 
 CPP_OBJECTS := $(CPP_SOURCES:.cc=.o)
 
@@ -46,3 +61,4 @@ clean:
 	@rm -fr $(CPP_OBJECTS)
 	@rm -fr $(LIBS)
 	@rm -fr *.pb.h *.pb.cc *.o
+	@rm -fr ./proto/*.o ./proto/*.pb.h ./proto/*.pb.cc

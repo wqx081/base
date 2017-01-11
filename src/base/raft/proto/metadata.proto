@@ -1,6 +1,48 @@
-package base.raft.metadata;
+package base.consensus;
 
-message MetadataPB {
-  required uint64 current_term = 1;
-  required uint64 voted_for = 2;
+import "base/common/common.proto";
+
+message RaftPeerPB {
+  enum Role {
+    UNKNOWN_ROLE = 999;
+
+    FOLLOWER = 0;
+    LEADER = 1;
+    LEARNER = 2;
+    NON_PARTICIPANT = 3;
+  };
+  
+  enum MemberType {
+    UNKNOWN_MEMBER_TYPE = 999;
+    NON_VOTER = 0;
+    VOTER = 1;
+  };
+
+  optional bytes permanent_uuid = 1;
+  optional MemberType member_type = 2;
+  optional HostPortPB last_known_addr = 3;
+};
+
+enum ConsensusConfigType {
+  CONSENSUS_CONFIG_UNKNOWN = 999;
+  CONSENSUS_CONFIG_COMMITTED = 1;
+  CONSENSUS_CONFIG_ACTIVE = 2;
+}
+
+message RaftConfigPB {
+  optional int64 opid_index = 1;
+  optional bool OBSOLETE_local = 2;
+  repeated RaftPeerPB peers = 3;
+}
+
+message ConsensusStatePB {
+  required int64 current_term = 1;
+  optional string leader_uuid = 2;
+  required RaftConfigPB config = 3;
+}
+
+message ConsensusMetadataPB {
+  required RaftConfigPB committed_config = 1;
+  required int64 current_term = 2;
+  optional string voted_for = 3;
 }
