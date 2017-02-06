@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <functional>
 
 #include "base/core/atomicops.h"
 #include "base/core/ref_counted.h"
@@ -136,40 +135,40 @@ class Thread : public core::RefCountedThreadSafe<Thread> {
   template <class F, class A1>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1), NO_FLAGS, holder);
   }
 
   template <class F, class A1, class A2>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, const A2& a2, scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1, a2), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1, a2), NO_FLAGS, holder);
   }
 
   template <class F, class A1, class A2, class A3>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, const A2& a2, const A3& a3, scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1, a2, a3), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1, a2, a3), NO_FLAGS, holder);
   }
 
   template <class F, class A1, class A2, class A3, class A4>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, const A2& a2, const A3& a3, const A4& a4,
                        scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1, a2, a3, a4), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1, a2, a3, a4), NO_FLAGS, holder);
   }
 
   template <class F, class A1, class A2, class A3, class A4, class A5>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5,
                        scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1, a2, a3, a4, a5), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1, a2, a3, a4, a5), NO_FLAGS, holder);
   }
 
   template <class F, class A1, class A2, class A3, class A4, class A5, class A6>
   static Status Create(const std::string& category, const std::string& name, const F& f,
                        const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5,
                        const A6& a6, scoped_refptr<Thread>* holder) {
-    return StartThread(category, name, boost::bind(f, a1, a2, a3, a4, a5, a6), NO_FLAGS, holder);
+    return StartThread(category, name, std::bind(f, a1, a2, a3, a4, a5, a6), NO_FLAGS, holder);
   }
 
   // Emulates boost::thread and detaches.

@@ -32,8 +32,9 @@
 #include "base/http/web_callback_registry.h"
 #include "base/util/url_coding.h"
 
-using boost::bind;
-using boost::mem_fn;
+using std::bind;
+using std::mem_fn;
+
 using std::endl;
 using std::map;
 using std::ostringstream;
@@ -248,7 +249,8 @@ Status ThreadMgr::StartInstrumentation(const scoped_refptr<MetricEntity>& metric
         core::Bind(&GetInVoluntaryContextSwitches)));
 
   WebCallbackRegistry::PathHandlerCallback thread_callback =
-      bind<void>(mem_fn(&ThreadMgr::ThreadPathHandler), this, _1, _2);
+      bind<void>(mem_fn(&ThreadMgr::ThreadPathHandler), this, std::placeholders::_1, 
+                                                              std::placeholders::_2);
   DCHECK_NOTNULL(web)->RegisterPathHandler("/threadz", "Threads", thread_callback);
   return Status::OK();
 }
